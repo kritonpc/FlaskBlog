@@ -28,7 +28,7 @@
     },
     methods: {
       goToCategory(item){
-        this.$router.push('/categories/'+item.route)
+        this.$router.push('/categories/'+item.title)
         console.log('You pressed ',item.title);
       }
     },

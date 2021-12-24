@@ -67,8 +67,10 @@ def getCategories():
 
 @app.route('/api/<category>/posts', methods=['GET'])
 def getPosts(category):
-    posts = db.session.query(Post).filter_by(category_id=category).all()
-    return jsonify(serializer(posts))
+    category = db.session.query(Category).filter_by(title=category).first()
+    posts = db.session.query(Post).filter_by(category_id=category.id).all()
+    obj = {'category':category.serialize, 'posts':serializer(posts)}
+    return jsonify(obj)
 
 @app.route('/api/posts/<post_id>', methods=['GET'])
 def getPost(post_id):
