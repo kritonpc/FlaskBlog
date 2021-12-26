@@ -1,2 +1,4 @@
 .DS_Store
 vue-project/package-lock.json
+__pycache__/app.cpython-37.pyc
+__pycache__/models.cpython-37.pyc

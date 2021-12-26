@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="showPostDialog">
+    <v-dialog width="50vw" v-model="showPostDialog">
       <v-card>
         <v-card-title>
           {{currentPost.title}}
@@ -8,6 +8,27 @@
         <v-card-text>
           {{currentPost.body}}
         </v-card-text>
+        <v-divider/>
+        <v-card-actions>
+          <!-- like button -->
+          <v-btn x-small text fab>
+            <v-icon>
+              mdi-thumb-up
+            </v-icon>
+          </v-btn>
+          <!-- dislike button -->
+          <v-btn x-small text fab>
+            <v-icon>
+              mdi-thumb-down
+            </v-icon>
+          </v-btn>
+          <!-- comment button -->
+          <v-btn x-small text fab>
+            <v-icon>
+              mdi-comment
+            </v-icon>
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog v-model="addPostDialog">

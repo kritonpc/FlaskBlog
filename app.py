@@ -108,8 +108,8 @@ def likePost(post_id):
     else:
         return 'failed'
 
-@app.route('/api/dislike/<post_id>', methods=['POST'])
-def dislikePost(post_id):
+@app.route('/api/unlike/<post_id>', methods=['POST'])
+def unlikePost(post_id):
     data = request.json
     user = VerifyUser(data['auth_token'])
     if user:
