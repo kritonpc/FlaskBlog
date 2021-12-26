@@ -126,6 +126,44 @@ def unlikePost(post_id):
     else:
         return 'failed'
 
+
+@app.route('/api/dislike/<post_id>', methods=['POST'])
+def dislikePost(post_id):
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        post = db.session.query(Post).filter_by(id=post_id).first()
+        if post:
+            if user.id not in post.likes:
+                post.dislikes.append(user.id)
+                db.session.commit()
+                return 'success'
+            else:
+                return 'failed'
+        else:
+            return 'failed'
+    else:
+        return 'failed'
+
+@app.route('/api/undislike/<post_id>', methods=['POST'])
+def unDislikePost(post_id):
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        post = db.session.query(Post).filter_by(id=post_id).first()
+        if post:
+            if user.id in post.likes:
+                post.dislikes.remove(user.id)
+                db.session.commit()
+                return 'success'
+            else:
+                return 'failed'
+        else:
+            return 'failed'
+    else:
+        return 'failed'
+
+
 @app.route('/api/comment/<post_id>', methods=['POST'])
 def commentPost(post_id):
     data = request.json
