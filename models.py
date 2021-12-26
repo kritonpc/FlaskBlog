@@ -94,13 +94,13 @@ class Like(db.Model):
             "user_id": self.user_id,
         }
 
-class Unlike(db.Model):
+class Dislike(db.Model):
     id = db.Column(db.String(64), primary_key=True, default=generate_uuid)
     post_id = db.Column(db.String(64), db.ForeignKey('post.id'))
     user_id = db.Column(db.String(64), db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Unike {}>'.format(self.id)
+        return '<Disike {}>'.format(self.id)
 
     @property
     def serialize(self):
