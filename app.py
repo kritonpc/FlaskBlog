@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from link_preview import link_preview
 import uuid, json
+from datetime import datetime,date
   
 
 from config import Config
@@ -187,7 +188,7 @@ def register():
     if user:
         return 'failed'
     else:
-        newUser = User(username=data['username'].lower(), password_hash=data['password'], ip=request.remote_addr, email=data['email'], description=data['description'],gender=data['gender'], dob=data['dob'], nickname=data['nickname'])
+        newUser = User(username=data['username'].lower(), password_hash=data['password'], ip=request.remote_addr, email=data['email'], description=data['description'], dob=datetime.strptime(data['dob'], '%Y-%m-%d'),gender=data['gender'], nickname=data['nickname'])
         db.session.add(newUser)
         db.session.commit()
         return 'success'

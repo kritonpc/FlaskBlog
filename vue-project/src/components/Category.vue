@@ -84,7 +84,7 @@
     },
     methods: {
       getPosts(){
-        axios.get(this.$store.state.server+'/api/'+this.$attrs.category+'/posts').then(response => {
+        axios.get(this.$store.state.server+'/api/'+this.$store.state.selectedCategory +'/posts').then(response => {
           this.posts = response.data.posts
           this.category = response.data.category
           console.log(response);
@@ -127,6 +127,8 @@
       }
     },
     mounted () {
+      // set selected category on store 
+      this.$store.commit('setSelectedCategory', this.$attrs.category)
       // this.$store.state.posts.forEach(post => {
       //   if(post.category === this.$attrs.category){
       //     this.posts.push(post)
