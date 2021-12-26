@@ -6,7 +6,6 @@ from link_preview import link_preview
 import uuid, json
   
 
-from models import *
 from config import Config
 
 
@@ -16,6 +15,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db, render_as_batch=True)
 app.config['SECRET_KEY'] = 'TsOpAnOxWrIaThS'
 
+from models import *
 cors = CORS(app, resources={r'/*': {'origins': '*'}})
 
 # from flask_socketio import SocketIO, emit, join_room, rooms
