@@ -1,14 +1,14 @@
 <template>
   <div>
     <v-row v-if="categories">
-      <v-col cols="6" sm="2" md="4" v-for="(item, index) in categories" :key="index" >
-          <v-card @click="goToCategory(item)" class="ma-5 text-center">
+      <v-col cols="6" sm="2" md="4" v-for="category,index in categories" :key="index" >
+          <v-card @click="goToCategory(category)" class="ma-5 text-center">
             <v-img
               height="250"
-              :src="$store.state.server+'/storage/images/'+item.image"
+              :src="$store.state.server+'/storage/images/'+category.image"
             ></v-img>
             <v-card-actions class="justify-center">
-              {{item.title}}
+              {{category.title}}
             </v-card-actions>
           </v-card>
       </v-col>
@@ -27,9 +27,10 @@
       }
     },
     methods: {
-      goToCategory(item){
-        this.$router.push('/categories/'+item.title)
-        console.log('You pressed ',item.title);
+      goToCategory(category){
+        this.$router.push('/categories/'+category.title)
+        this.$store.commit('setSelectedCategory', category)
+        console.log('You pressed ',category.title);
       }
     },
     mounted () {

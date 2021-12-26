@@ -20,7 +20,7 @@
         Saidit
       </div>
       <v-col cols='2' class="ml-4">
-        <v-select v-model="selectedCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" item-value="title" hide-details></v-select>
+        <v-select v-model="selectedCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
       </v-col>
       <v-spacer></v-spacer>
 
@@ -74,12 +74,12 @@
     </v-navigation-drawer>
       <router-view/>
     </v-main>
-    <v-footer>Made by PP</v-footer>
+    <v-footer app bottom fixed padless>Made by PP</v-footer>
   </v-app>
 </template>
 
 <script>
-
+import axios from 'axios'
 export default {
   name: 'App',
 
@@ -90,11 +90,18 @@ export default {
     selectedCategory: ''
   }),
   mounted () {
+    axios.get(this.$store.state.server+'/api/categories').then(response => {
+      this.categories = response.data
+      this.$store.commit('setCategories', response.data)
+      console.log(response);
+    })
     this.categories = this.$store.state.categories
   },
   methods: {
     goToCategory() {
-      this.$router.push('/categories/'+this.selectedCategory)
+      console.log(this.selectedCategory.title.toLowerCase());
+      this.$router.push('/categories/'+this.selectedCategory.title.toLowerCase())
+      this.$store.commit('setSelectedCategory', this.selectedCategory)
     }
   },
 };

@@ -80,10 +80,10 @@ def getPost(post_id):
 @app.route('/api/posts/create', methods=['POST'])
 def createPost():
     data = request.json
-    # print(f'Create post {data}')
-    user = VerifyUser(data['auth_token'])
-    if user:
-        post = Post(title=data['title'], body=data['body'], category_id=data['category_id'], poster_id=['poster_id'])
+    # user = VerifyUser(data['auth_token'])
+    # if user:
+    if True:
+        post = Post(title=data['title'], body=data['body'], category_id=data['category_id'], poster_id=data['poster_id'])
         db.session.add(post)
         db.session.commit()
         return 'success'
