@@ -4,9 +4,9 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from link_preview import link_preview
 import uuid, json
+from datetime import datetime,date
   
 
-from models import *
 from config import Config
 
 
@@ -16,6 +16,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db, render_as_batch=True)
 app.config['SECRET_KEY'] = 'TsOpAnOxWrIaThS'
 
+from models import *
 cors = CORS(app, resources={r'/*': {'origins': '*'}})
 
 # from flask_socketio import SocketIO, emit, join_room, rooms
@@ -125,6 +126,44 @@ def unlikePost(post_id):
     else:
         return 'failed'
 
+
+@app.route('/api/dislike/<post_id>', methods=['POST'])
+def dislikePost(post_id):
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        post = db.session.query(Post).filter_by(id=post_id).first()
+        if post:
+            if user.id not in post.likes:
+                post.dislikes.append(user.id)
+                db.session.commit()
+                return 'success'
+            else:
+                return 'failed'
+        else:
+            return 'failed'
+    else:
+        return 'failed'
+
+@app.route('/api/undislike/<post_id>', methods=['POST'])
+def unDislikePost(post_id):
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        post = db.session.query(Post).filter_by(id=post_id).first()
+        if post:
+            if user.id in post.likes:
+                post.dislikes.remove(user.id)
+                db.session.commit()
+                return 'success'
+            else:
+                return 'failed'
+        else:
+            return 'failed'
+    else:
+        return 'failed'
+
+
 @app.route('/api/comment/<post_id>', methods=['POST'])
 def commentPost(post_id):
     data = request.json
@@ -148,7 +187,7 @@ def register():
     if user:
         return 'failed'
     else:
-        newUser = User(username=data['username'].lower(), password_hash=data['password'], ip=request.remote_addr, email=data['email'], description=data['description'],gender=data['gender'], dob=data['dob'], nickname=data['nickname'])
+        newUser = User(username=data['username'].lower(), password_hash=data['password'], ip=request.remote_addr, email=data['email'], description=data['description'], dob=datetime.strptime(data['dob'], '%Y-%m-%d'),gender=data['gender'], nickname=data['nickname'])
         db.session.add(newUser)
         db.session.commit()
         return 'success'

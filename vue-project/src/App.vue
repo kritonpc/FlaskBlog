@@ -20,15 +20,45 @@
         Saidit
       </div>
       <v-col cols='2' class="ml-4">
-        <v-select v-model="selectedCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
+        <v-select v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
       </v-col>
       <v-spacer></v-spacer>
 
-      <v-btn fab small text>
+      <v-btn fab small text
+        class="white--text"
+      >
         <v-icon>
           mdi-cog
         </v-icon>
       </v-btn>
+      <v-menu
+        ref="menu"
+        :close-on-content-click="false"
+        v-model="menu"
+        :nudge-right="40"
+        offset-y
+        transition="scale-transition"
+        origin="top right"
+        class="hidden-md-and-down"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon>mdi-account</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/login">Login</router-link>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/register">Register</router-link>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-main>
@@ -87,8 +117,19 @@ export default {
     categories: [],
     drawer: false,
     group: null,
-    selectedCategory: ''
+    currentCategory: '',
+    menu: false,
   }),
+  computed: {
+    selectedCategory() {
+      return this.$store.state.selectedCategory
+    }
+  },
+  watch: {
+    selectedCategory(newValue) {
+      this.currentCategory = newValue
+    }
+  },
   mounted () {
     axios.get(this.$store.state.server+'/api/categories').then(response => {
       this.categories = response.data
@@ -99,10 +140,9 @@ export default {
   },
   methods: {
     goToCategory() {
-      console.log(this.selectedCategory.title.toLowerCase());
-      this.$router.push('/categories/'+this.selectedCategory.title.toLowerCase())
-      this.$store.commit('setSelectedCategory', this.selectedCategory)
-    }
+      this.$router.push('/categories/'+this.currentCategory)
+      this.$store.commit('setSelectedCategory', this.currentCategory)
+    },
   },
 };
 </script>
