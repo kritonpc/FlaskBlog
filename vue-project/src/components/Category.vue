@@ -49,7 +49,7 @@
       <h2>{{category.title}}</h2>
       <h3>{{category.description}}</h3>
       <h1 v-if="posts.length === 0">There is nothing to see here yet.</h1>
-      <div v-for="post,index in posts" :key="index">
+      <div v-for="post,index in posts.slice().reverse()" :key="index">
         <v-card color="#FFB6C1" class="mt-3 mx-auto text-left" width="50%" @click="openPost(post)">
           <v-card-title>
             {{post.title}}
