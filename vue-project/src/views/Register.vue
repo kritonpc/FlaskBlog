@@ -117,7 +117,7 @@
                         class="mr-4"
                         @click="validate"
                         >
-                        Validate
+                        Register
                     </v-btn>
                 </v-form>
             </v-card-text>
