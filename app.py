@@ -51,7 +51,6 @@ def loginOLD():
     loggedInUser = db.session.query(User).filter_by(username=data['username'].lower()).first()
     if loggedInUser:
         if loggedInUser.password_hash == data['password']:
-            loggedInUser.connected = True
             loggedInUser.auth_token = uuid.uuid4().hex
             loggedInUser.ip = request.remote_addr
             db.session.commit()
