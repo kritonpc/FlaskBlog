@@ -137,6 +137,17 @@ export default {
       console.log(response);
     })
     this.categories = this.$store.state.categories
+    // read the auth_token cookie and post to login
+    if (document.cookie.indexOf('auth_token') !== -1) {
+      axios.post(this.$store.state.server+'/api/validate-token', {
+        auth_token: document.cookie.split('auth_token=')[1]
+      }).then(response => {
+        if (response.data === 'success') {
+          this.$store.commit('setUser', response.data)
+          this.$store.commit('setLoggedIn', true)
+        }
+      })
+    }
   },
   methods: {
     goToCategory() {

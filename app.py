@@ -43,21 +43,21 @@ def VerifyUser(token):
         return False
 
 
-@app.route('/api/login', methods=['POST'])
-def loginOLD():
-    data = request.json
-    # print(f'Login {data}')
-    # print(f'------------------------------------{request.remote_addr}')
-    loggedInUser = db.session.query(User).filter_by(username=data['username'].lower()).first()
-    if loggedInUser:
-        if loggedInUser.password_hash == data['password']:
-            loggedInUser.auth_token = uuid.uuid4().hex
-            loggedInUser.ip = request.remote_addr
-            db.session.commit()
-            auth_token = jsonify({'username':loggedInUser.username, 'id':loggedInUser.id, 'auth_token':loggedInUser.auth_token})
-            return auth_token
-    else:
-        return 'failed'
+# @app.route('/api/login', methods=['POST'])
+# def loginOLD():
+#     data = request.json
+#     # print(f'Login {data}')
+#     # print(f'------------------------------------{request.remote_addr}')
+#     loggedInUser = db.session.query(User).filter_by(username=data['username'].lower()).first()
+#     if loggedInUser:
+#         if loggedInUser.password_hash == data['password']:
+#             loggedInUser.auth_token = uuid.uuid4().hex
+#             loggedInUser.ip = request.remote_addr
+#             db.session.commit()
+#             auth_token = jsonify({'username':loggedInUser.username, 'id':loggedInUser.id, 'auth_token':loggedInUser.auth_token})
+#             return auth_token
+#     else:
+#         return 'failed'
 
 
 @app.route('/api/categories', methods=['GET'])
@@ -195,19 +195,30 @@ def register():
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
-    user = db.session.query(User).filter_by(username=data['username'].lower()).first()
-    if user:
-        if user.password_hash == data['password']:
-            # user.connected = True
-            user.auth_token = uuid.uuid4().hex
-            user.ip = request.remote_addr
-            db.session.commit()
-            auth_token = jsonify({'username':user.username, 'id':user.id, 'auth_token':user.auth_token})
-            return auth_token
-        else:
-            return 'failed'
+    try:
+        user = db.session.query(User).filter_by(username=data['username'].lower()).first()
+        if user & user!=None:
+            if user.password_hash == data['password']:
+                # user.connected = True
+                user.auth_token = uuid.uuid4().hex
+                user.ip = request.remote_addr
+                db.session.commit()
+                auth_token = jsonify({'username':user.username, 'id':user.id, 'auth_token':user.auth_token})
+                return auth_token
+            else:
+                return 'failed'
+    except(Exception):
+        return 'failed'
     
 
+@app.route('/api/validate-token', methods=['POST'])
+def validateToken():
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        return jsonify({'username':user.username, 'id':user.id})
+    else:
+        return 'failed'
 
 @app.route('/api/link-preview', methods=['POST','GET'])
 def linkPreview():

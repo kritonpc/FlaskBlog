@@ -11,7 +11,10 @@ export default new Vuex.Store({
     posts:[
     ],
     categories: [
-    ]
+    ],
+    user: {id: null, username: null},
+    token: null,
+    isLoggedIn: false,
   },
   mutations: {
     addPost(state, post){
@@ -31,6 +34,15 @@ export default new Vuex.Store({
     },
     setCategories(state, categories){
       state.categories = categories
+    },
+    setUser(state, user){
+      state.user = user
+    },
+    setToken(state, token){
+      state.token = token
+    },
+    setIsLoggedIn(state, isLoggedIn){
+      state.isLoggedIn = isLoggedIn
     }
   },
   actions: {
@@ -51,12 +63,24 @@ export default new Vuex.Store({
     },
     setSelectedCategory({commit}, category){
       commit('setSelectedCategory', category)
+    },
+    setUser({commit}, user){
+      commit('setUser', user)
+    },
+    setToken({commit}, token){
+      commit('setToken', token)
+    },
+    setLoggedIn({commit}, isLoggedIn){
+      commit('setIsLoggedIn', isLoggedIn)
     }
   },
   getters: {
     posts: state => state.posts,
     categories: state => state.categories,
-    selectedCategory: state => state.selectedCategory
+    selectedCategory: state => state.selectedCategory,
+    user: state => state.user,
+    token: state => state.token,
+    isLoggedIn: state => state.isLoggedIn
   },
   modules: {
   }
