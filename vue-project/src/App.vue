@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar
       app
-      color="primary"
+      :color="$store.getters.color"
       dark
     >
     <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
@@ -24,13 +24,62 @@
       </v-col>
       <v-spacer></v-spacer>
       <!-- {{$store.getters.token}} -->
-      <v-btn fab small text
+      <!-- <v-btn fab small text
         class="white--text"
       >
         <v-icon>
           mdi-cog
         </v-icon>
-      </v-btn>
+      </v-btn> -->
+      <v-menu
+        ref="colorMenu"
+        :close-on-content-click="false"
+        v-model="colorMenu"
+        :nudge-right="40"
+        offset-y
+        transition="scale-transition"
+        origin="top right"
+        class="hidden-md-and-down"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn style="background-color: black" fab v-on="on" small>
+            <v-avatar
+            size="30"
+            :color="$store.getters.color"
+            style="font-size: 7px"
+            >Color</v-avatar>
+          </v-btn>
+        </template>
+        <v-card rounded='md'>
+          <v-row no-gutters style="width: 170px">
+            <template v-for="color,n in colors">
+              <v-col :key="n">
+                <v-card
+                  class="pa-1"
+                  outlined
+                  :color="selectedColor === color ? 'black' : 'white'"
+                  rounded='md'
+                  :disabled="selectedColor === color"
+                  @click="setColor(color)"
+                >
+                  <v-card
+                  width="30px"
+                  height="30px"
+                  rounded='md'
+                  class="mx-auto my-auto"
+                  :color="color"
+                  />
+                </v-card>
+              </v-col>
+              <v-responsive
+                v-if="(n+1) % 4 == 0 "
+                :key="`width-${n}`"
+                width="100%"
+              ></v-responsive>
+            </template>
+          </v-row>
+        </v-card>
+      </v-menu>
       <v-menu
         ref="menu"
         :close-on-content-click="false"
@@ -135,6 +184,26 @@ export default {
     group: null,
     currentCategory: '',
     menu: false,
+    colorMenu: false,
+    selectedColor: '',
+    colors:[
+          'blue',
+          'blue-grey',
+          'brown',
+          'cyan',
+          'deep-orange',
+          'deep-purple',
+          'green',
+          'grey',
+          'indigo',
+          'light-blue',
+          'light-green',
+          'lime',
+          'red',
+          'teal',
+          'yellow',
+          'orange',
+        ]
   }),
   computed: {
     selectedCategory() {
@@ -154,6 +223,7 @@ export default {
         if (response.data !== 'failed') { 
           console.log("Setting auth token");
           this.$store.commit('setUser', response.data),
+          this.$store.commit('setColor', response.data.color)
           this.$store.commit('setToken', JSON.parse(document.cookie.split('auth_token=')[1]))
           this.$store.commit('setIsLoggedIn', true)
         }
@@ -168,6 +238,10 @@ export default {
     // read the auth_token cookie and post to login
   },
   methods: {
+    setColor(color) {
+        this.selectedColor = color
+        this.$store.commit('setColor', color)
+    },
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1)
     },

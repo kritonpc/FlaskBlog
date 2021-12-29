@@ -215,7 +215,7 @@ def validateToken():
     data = request.json
     user = VerifyUser(data['auth_token'])
     if user:
-        return jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar})
+        return jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar, 'color':user.color})
     else:
         return 'failed'
 
@@ -228,7 +228,15 @@ def linkPreview():
     except:
         print('Link Not Available')
         return {}
-    
+
+@app.route('/api/profile/', methods=['POST'])
+def getUserData():
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        return jsonify(user.serialize)
+    else:
+        return 'failed'
 
 @app.route('/storage/images/<image_name>', methods=['GET'])
 def getImage(image_name):

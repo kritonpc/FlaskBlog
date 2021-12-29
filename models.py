@@ -23,6 +23,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128))
     ip = db.Column(db.String(15))
     auth_token = db.Column(db.String(32), index=True, unique=True)
+    color = db.Column(db.String(32), default='#000000')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -40,7 +41,8 @@ class User(db.Model):
             "email": self.email,
             "password_hash": self.password_hash,
             "ip": self.ip,
-            "auth_token": self.auth_token
+            "auth_token": self.auth_token,
+            "color": self.color
         }
 
     @property

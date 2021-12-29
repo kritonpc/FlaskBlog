@@ -97,7 +97,7 @@
       <h3>{{category.description}}</h3>
       <h1 v-if="posts.length === 0">There is nothing to see here yet.</h1>
       <div v-for="post,index in posts.slice().reverse()" :key="index">
-        <v-card color="blue lighten-2" class="mt-3 mx-auto text-left" width="50%" @click="openPost(index)">
+        <v-card :color="$store.getters.color" class="mt-3 mx-auto text-left" width="50%" @click="openPost(index)">
           <v-card-title>
             {{post.title}}
           </v-card-title>
@@ -106,7 +106,7 @@
           </v-card-text>
         </v-card>
       </div>
-      <v-btn fixed bottom right fab class="mx-6 my-10" @click="addPostDialog = true"><v-icon>mdi-plus</v-icon></v-btn>
+      <v-btn fixed bottom right fab :color='$store.getters.color' class="mx-6 my-10" @click="addPostDialog = true"><v-icon>mdi-plus</v-icon></v-btn>
     </div>
   </div>
 </template>
@@ -211,13 +211,12 @@
         })
       },
       scrollToBottom(){
-        this.$nextTick(() => {
           setTimeout(function() {
           const ctr = document.getElementById('scroll')
-          ctr.scrollTop = ctr.scrollHeight
+          if (ctr) {
+            ctr.scrollTop = ctr.scrollHeight;
+          }
         }, 1);
-        })
-        
       }
     },
     watch: {

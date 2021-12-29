@@ -15,6 +15,7 @@ export default new Vuex.Store({
     user: {id: null, username: null, avatar: null},
     token: null,
     isLoggedIn: false,
+    color: 'primary',
   },
   mutations: {
     addPost(state, post){
@@ -43,6 +44,9 @@ export default new Vuex.Store({
     },
     setIsLoggedIn(state, isLoggedIn){
       state.isLoggedIn = isLoggedIn
+    },
+    setColor(state, color){
+      state.color = color
     }
   },
   actions: {
@@ -72,6 +76,9 @@ export default new Vuex.Store({
     },
     setIsLoggedIn({commit}, isLoggedIn){
       commit('setIsLoggedIn', isLoggedIn)
+    },
+    setColor({commit}, color){
+      commit('setColor', color)
     }
   },
   getters: {
@@ -80,7 +87,8 @@ export default new Vuex.Store({
     selectedCategory: state => state.selectedCategory,
     user: state => state.user,
     token: state => state.token,
-    isLoggedIn: state => state.isLoggedIn
+    isLoggedIn: state => state.isLoggedIn,
+    color: state => state.color
   },
   modules: {
   }
