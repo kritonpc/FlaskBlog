@@ -23,14 +23,6 @@
         <v-select v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
       </v-col>
       <v-spacer></v-spacer>
-      <!-- {{$store.getters.token}} -->
-      <!-- <v-btn fab small text
-        class="white--text"
-      >
-        <v-icon>
-          mdi-cog
-        </v-icon>
-      </v-btn> -->
       <v-menu
         ref="colorMenu"
         :close-on-content-click="false"

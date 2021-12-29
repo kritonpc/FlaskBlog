@@ -8,7 +8,7 @@
               :src="$store.state.server+'/storage/images/'+category.image"
             ></v-img>
             <v-card-actions class="justify-center">
-              {{category.title}}
+              <h4>{{category.title}}</h4>
             </v-card-actions>
           </v-card>
       </v-col>
@@ -34,6 +34,7 @@
       }
     },
     mounted () {
+      this.$store.commit('setSelectedCategory', '')
       axios.get(this.$store.state.server+'/api/categories').then(response => {
         this.categories = response.data
         console.log(response);
