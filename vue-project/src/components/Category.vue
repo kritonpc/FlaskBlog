@@ -2,10 +2,20 @@
   <div>
     <v-dialog width="60vw" v-model="showPostDialog">
       <v-card v-if="currentPost !== undefined">
-        <v-card-title>
-          {{currentPost.title}}
+        <v-card-title class="d-flex flex-row">
+          <v-avatar size="68">
+            <v-img :src="$store.state.server+'/storage/images/'+currentPost.poster.avatar" />
+          </v-avatar>
+          <div>
+            <v-card-title>
+              {{currentPost.title}}
+            </v-card-title>
+            <v-card-subtitle>
+              Posted by {{currentPost.poster.nickname}} {{moment(currentPost.timestamp).fromNow()}}
+            </v-card-subtitle>
+          </div>
         </v-card-title>
-        <v-card-text>
+        <v-card-text style="color: black">
           {{currentPost.body}}
         </v-card-text>
         <v-divider/>
@@ -33,11 +43,11 @@
         </v-card-actions>
         <v-divider/>
         <v-card-actions v-if="currentPost.comments_count>0">
-          <v-list style="max-height: 50vh; width:100%" class="overflow-y-auto">
-            <v-list-item v-for="comment,i in currentPost.comments.slice().reverse()" :key="i" class="my-2 align-start">
+          <v-list id="scroll" style="max-height: 50vh; width:100%" class="overflow-y-auto">
+            <v-list-item v-for="comment,i in currentPost.comments" :key="i" class="my-2 align-start">
               <div class="d-flex flex-row align-center">
-                  <v-avatar>
-                    <v-img :src="$store.state.server+'/storage/images/'+$store.getters.user.avatar" alt="avatar" />
+                  <v-avatar size='36'>
+                    <v-img :src="$store.state.server+'/storage/images/'+comment.user.avatar" alt="avatar" />
                   </v-avatar>
                   <div class="d-flex flex-column mx-1">
                     <span style="font-size:12px">{{comment.user.nickname}}</span>
@@ -45,7 +55,7 @@
                   </div>
               </div>
               <v-spacer/>
-              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-color: white' color="primary" max-width='60%'>
+              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-color: white; font-size: 12px' color="primary" max-width='60%'>
                 {{comment.body}}
               </v-card>
             </v-list-item>
@@ -80,14 +90,14 @@
       </v-card>
     </v-dialog>
     <div class="text-center">
-      <v-img width="100%" max-height="180px" class="align-center" :src="$store.state.server+'/storage/images/'+category.image">
+      <v-img v-if="category.image !== undefined" width="100%" max-height="180px" class="align-center" :src="$store.state.server+'/storage/images/'+category.image">
       <v-chip large class='mt-2' color='black'><h1 style='color: white'>{{category.title}}</h1></v-chip>
       </v-img>
       
       <h3>{{category.description}}</h3>
       <h1 v-if="posts.length === 0">There is nothing to see here yet.</h1>
       <div v-for="post,index in posts.slice().reverse()" :key="index">
-        <v-card color="#FFB6C1" class="mt-3 mx-auto text-left" width="50%" @click="openPost(index)">
+        <v-card color="blue lighten-2" class="mt-3 mx-auto text-left" width="50%" @click="openPost(index)">
           <v-card-title>
             {{post.title}}
           </v-card-title>
@@ -176,6 +186,7 @@
         this.currentPostIndex = index
         this.currentPost = this.posts[index]
         this.showPostDialog = true
+        this.scrollToBottom()
       },
       createPost(){
         console.log(this.$store.getters.token)
@@ -198,17 +209,19 @@
           this.addPostDialog = false
         })
       },
-      
+      scrollToBottom(){
+        this.$nextTick(() => {
+          setTimeout(function() {
+          const ctr = document.getElementById('scroll')
+          ctr.scrollTop = ctr.scrollHeight
+        }, 1);
+        })
+        
+      }
     },
     watch: {
       $attrs() {
         this.getPosts()
-        
-      //   this.$store.state.posts.forEach(post => {
-      //   if(post.category === this.$attrs.category){
-      //     this.posts.push(post)
-      //   }
-      // }); 
       }
     },
     mounted () {

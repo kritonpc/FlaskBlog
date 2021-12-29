@@ -6,7 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     // server: 'http://192.168.1.16:2310',
-    server: 'http://localhost:2310',
+    server: 'http://'+window.location.hostname+':2310',
     selectedCategory: null,
     posts:[
     ],

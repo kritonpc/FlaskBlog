@@ -78,9 +78,11 @@ class Post(db.Model):
     poster_id = db.Column(db.String(64), db.ForeignKey('user.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     likes = db.relationship('Like', backref='post', lazy='dynamic')
     dislikes = db.relationship('Dislike', backref='post', lazy='dynamic')
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    poster = db.relationship('User', backref='posts')
 
     def __repr__(self):
         return '<Post {}>'.format(self.title)
@@ -97,7 +99,9 @@ class Post(db.Model):
             "comments_count": self.comments.count(),
             "likes": serializer(self.likes),
             "dislikes": serializer(self.dislikes),
-            "comments": serializer(self.comments)
+            "comments": serializer(self.comments),
+            "poster": self.poster.info,
+            "timestamp": self.timestamp
         }
 
 class Like(db.Model):
