@@ -21,20 +21,20 @@
         <v-divider/>
         <v-card-actions>
           <!-- like button -->
-          <v-btn x-small text fab @click="like(currentPost)">
+          <v-btn x-small text fab @click="like(currentPost)" :disabled="!$store.getters.isLoggedIn">
             <v-icon>
               mdi-thumb-up
             </v-icon>
           </v-btn>
           <span class="mr-3" style="font-size: 10px">{{currentPost.likes_count}}</span>
-          <v-btn x-small text fab @click="dislike(currentPost)">
+          <v-btn x-small text fab @click="dislike(currentPost)" :disabled="!$store.getters.isLoggedIn">
             <v-icon>
               mdi-thumb-down
             </v-icon>
           </v-btn>
           <span class="mr-3" style="font-size: 10px">{{currentPost.dislikes_count}}</span>
           <!-- comment button -->
-          <v-btn x-small text fab>
+          <v-btn x-small text fab :disabled="!$store.getters.isLoggedIn">
             <v-icon>
               mdi-comment
             </v-icon>
