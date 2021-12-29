@@ -9,6 +9,7 @@
         <v-form>
             <v-text-field
                 v-model="username"
+                type="username"
                 label="Username"
                 required
             ></v-text-field>

@@ -61,7 +61,7 @@
             </v-list-item>
           </v-list>
         </v-card-actions>
-        <v-card-actions class="py-0 px-4">
+        <v-card-actions class="py-0 px-4" v-if="$store.getters.isLoggedIn">
           <v-textarea rows='1' v-model="comment" placeholder="Comment" class="py-1 my-1" hide-details style="font-size: 12px" @keyup.enter="addComment(currentPost)">
             <!-- append post button in slot -->
             <template slot="append-outer">
@@ -180,6 +180,7 @@
           this.posts.push('')
           this.posts.pop()
           this.currentPost = this.posts[this.currentPostIndex]
+          this.scrollToBottom()
         }) 
       },
       openPost(index){
