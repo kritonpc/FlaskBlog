@@ -80,9 +80,8 @@ def getPost(post_id):
 @app.route('/api/posts/create', methods=['POST'])
 def createPost():
     data = request.json
-    # user = VerifyUser(data['auth_token'])
-    # if user:
-    if True:
+    user = VerifyUser(data['auth_token'])
+    if user:
         post = Post(title=data['title'], body=data['body'], category_id=data['category_id'], poster_id=data['poster_id'])
         db.session.add(post)
         db.session.commit()
@@ -97,8 +96,9 @@ def likePost(post_id):
     if user:
         post = db.session.query(Post).filter_by(id=post_id).first()
         if post:
-            if user.id not in post.likes:
-                post.likes.append(user.id)
+            if not post.likes.filter_by(user_id=user.id).first():
+                like = Like(user_id=user.id, post_id=post.id)
+                db.session.add(like)
                 db.session.commit()
                 return 'success'
             else:
@@ -134,8 +134,9 @@ def dislikePost(post_id):
     if user:
         post = db.session.query(Post).filter_by(id=post_id).first()
         if post:
-            if user.id not in post.likes:
-                post.dislikes.append(user.id)
+            if not post.dislikes.filter_by(user_id=user.id).first():
+                dislike = Dislike(user_id=user.id, post_id=post.id)
+                db.session.add(dislike)
                 db.session.commit()
                 return 'success'
             else:
@@ -171,7 +172,7 @@ def commentPost(post_id):
     if user:
         post = db.session.query(Post).filter_by(id=post_id).first()
         if post:
-            comment = Comment(body=data['body'], poster_id=user.id, post_id=post_id)
+            comment = Comment(body=data['body'], user_id=user.id, post_id=post_id)
             db.session.add(comment)
             db.session.commit()
             return 'success'
@@ -195,20 +196,18 @@ def register():
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
-    try:
-        user = db.session.query(User).filter_by(username=data['username'].lower()).first()
-        if user & user!=None:
-            if user.password_hash == data['password']:
-                # user.connected = True
-                user.auth_token = uuid.uuid4().hex
-                user.ip = request.remote_addr
-                db.session.commit()
-                auth_token = jsonify({'username':user.username, 'id':user.id, 'auth_token':user.auth_token})
-                return auth_token
-            else:
-                return 'failed'
-    except(Exception):
-        return 'failed'
+    user = db.session.query(User).filter_by(username=data['username'].lower()).first()
+    print(f"User: {user}, Data: {data}")
+    if user and user!=None:
+        if user.password_hash == data['password']:
+            # user.connected = True
+            user.auth_token = uuid.uuid4().hex
+            user.ip = request.remote_addr
+            db.session.commit()
+            auth_token = jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar, 'auth_token':user.auth_token})
+            return auth_token
+        else:
+            return 'failed'
     
 
 @app.route('/api/validate-token', methods=['POST'])
@@ -216,7 +215,7 @@ def validateToken():
     data = request.json
     user = VerifyUser(data['auth_token'])
     if user:
-        return jsonify({'username':user.username, 'id':user.id})
+        return jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar})
     else:
         return 'failed'
 

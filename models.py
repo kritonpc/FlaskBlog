@@ -5,6 +5,12 @@ import uuid
 def generate_uuid():
     return str(uuid.uuid4())
 
+def serializer(object):
+    ser = []
+    for item in object:
+        ser.append(item.serialize)
+    return ser
+
 class User(db.Model):
     id = db.Column(db.String(64), primary_key=True, default=generate_uuid)
     gender = db.Column(db.Boolean, nullable=False)
@@ -37,6 +43,14 @@ class User(db.Model):
             "auth_token": self.auth_token
         }
 
+    @property
+    def info(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "nickname": self.nickname,
+            "avatar": self.avatar,
+        }
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -65,6 +79,8 @@ class Post(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     likes = db.relationship('Like', backref='post', lazy='dynamic')
+    dislikes = db.relationship('Dislike', backref='post', lazy='dynamic')
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
     def __repr__(self):
         return '<Post {}>'.format(self.title)
@@ -76,12 +92,19 @@ class Post(db.Model):
             "title": self.title,
             "body": self.body,
             "poster_id": self.poster_id,
+            "likes_count": self.likes.count(),
+            "dislikes_count": self.dislikes.count(),
+            "comments_count": self.comments.count(),
+            "likes": serializer(self.likes),
+            "dislikes": serializer(self.dislikes),
+            "comments": serializer(self.comments)
         }
 
 class Like(db.Model):
     id = db.Column(db.String(64), primary_key=True, default=generate_uuid)
     post_id = db.Column(db.String(64), db.ForeignKey('post.id'))
     user_id = db.Column(db.String(64), db.ForeignKey('user.id'))
+    user = db.relationship('User', backref='likes')
 
     def __repr__(self):
         return '<Like {}>'.format(self.id)
@@ -92,12 +115,14 @@ class Like(db.Model):
             "id": self.id,
             "post_id": self.post_id,
             "user_id": self.user_id,
+            "user": self.user.info
         }
 
 class Dislike(db.Model):
     id = db.Column(db.String(64), primary_key=True, default=generate_uuid)
     post_id = db.Column(db.String(64), db.ForeignKey('post.id'))
     user_id = db.Column(db.String(64), db.ForeignKey('user.id'))
+    user = db.relationship('User', backref='dislikes')
 
     def __repr__(self):
         return '<Disike {}>'.format(self.id)
@@ -108,6 +133,7 @@ class Dislike(db.Model):
             "id": self.id,
             "post_id": self.post_id,
             "user_id": self.user_id,
+            "user": self.user.info
         }
 
 class Comment(db.Model):
@@ -116,6 +142,7 @@ class Comment(db.Model):
     user_id = db.Column(db.String(64), db.ForeignKey('user.id'))
     body = db.Column(db.String(256))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    user = db.relationship('User', backref='comments')
 
     def __repr__(self):
         return '<Comment {}>'.format(self.id)
@@ -128,4 +155,5 @@ class Comment(db.Model):
             "user_id": self.user_id,
             "body": self.body,
             "timestamp": self.timestamp,
+            "user": self.user.info
         }

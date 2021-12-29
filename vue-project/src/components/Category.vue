@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-dialog width="50vw" v-model="showPostDialog">
-      <v-card>
+    <v-dialog width="60vw" v-model="showPostDialog">
+      <v-card v-if="currentPost !== undefined">
         <v-card-title>
           {{currentPost.title}}
         </v-card-title>
@@ -11,23 +11,57 @@
         <v-divider/>
         <v-card-actions>
           <!-- like button -->
-          <v-btn x-small text fab>
+          <v-btn x-small text fab @click="like(currentPost)">
             <v-icon>
               mdi-thumb-up
             </v-icon>
           </v-btn>
-          <!-- dislike button -->
-          <v-btn x-small text fab>
+          <span class="mr-3" style="font-size: 10px">{{currentPost.likes_count}}</span>
+          <v-btn x-small text fab @click="dislike(currentPost)">
             <v-icon>
               mdi-thumb-down
             </v-icon>
           </v-btn>
+          <span class="mr-3" style="font-size: 10px">{{currentPost.dislikes_count}}</span>
           <!-- comment button -->
           <v-btn x-small text fab>
             <v-icon>
               mdi-comment
             </v-icon>
           </v-btn>
+          <span class="mr-3" style="font-size: 10px">{{currentPost.comments_count}}</span>
+        </v-card-actions>
+        <v-divider/>
+        <v-card-actions v-if="currentPost.comments_count>0">
+          <v-list style="max-height: 50vh; width:100%" class="overflow-y-auto">
+            <v-list-item v-for="comment,i in currentPost.comments.slice().reverse()" :key="i" class="my-2 align-start">
+              <div class="d-flex flex-row align-center">
+                  <v-avatar>
+                    <v-img :src="$store.state.server+'/storage/images/'+$store.getters.user.avatar" alt="avatar" />
+                  </v-avatar>
+                  <div class="d-flex flex-column mx-1">
+                    <span style="font-size:12px">{{comment.user.nickname}}</span>
+                    <span style="font-size:8px">{{moment(comment.timestamp).fromNow()}}</span>
+                  </div>
+              </div>
+              <v-spacer/>
+              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-color: white' color="primary" max-width='60%'>
+                {{comment.body}}
+              </v-card>
+            </v-list-item>
+          </v-list>
+        </v-card-actions>
+        <v-card-actions class="py-0 px-4">
+          <v-textarea rows='1' v-model="comment" placeholder="Comment" class="py-1 my-1" hide-details style="font-size: 12px" @keyup.enter="addComment(currentPost)">
+            <!-- append post button in slot -->
+            <template slot="append-outer">
+              <v-btn fab text x-small @click="addComment(currentPost)">
+                <v-icon>
+                  mdi-send
+                </v-icon>
+              </v-btn>
+            </template>
+          </v-textarea>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -46,11 +80,14 @@
       </v-card>
     </v-dialog>
     <div class="text-center">
-      <h2>{{category.title}}</h2>
+      <v-img width="100%" max-height="180px" class="align-center" :src="$store.state.server+'/storage/images/'+category.image">
+      <v-chip large class='mt-2' color='black'><h1 style='color: white'>{{category.title}}</h1></v-chip>
+      </v-img>
+      
       <h3>{{category.description}}</h3>
       <h1 v-if="posts.length === 0">There is nothing to see here yet.</h1>
       <div v-for="post,index in posts.slice().reverse()" :key="index">
-        <v-card color="#FFB6C1" class="mt-3 mx-auto text-left" width="50%" @click="openPost(post)">
+        <v-card color="#FFB6C1" class="mt-3 mx-auto text-left" width="50%" @click="openPost(index)">
           <v-card-title>
             {{post.title}}
           </v-card-title>
@@ -66,10 +103,14 @@
 
 <script>
   import axios from 'axios'
+  import moment from 'moment'
   export default {
     name: 'Categories',
     data() {
       return {
+        comment: '',
+        currentPostIndex: 0,
+        currentPost: undefined,
         posts: [],
         category: [],
         currentCategory:this.$attrs.category,
@@ -79,27 +120,71 @@
           title:'',
           body: ''
         },
-        currentPost: {}
       }
     },
     methods: {
+      moment,
+      like(post){
+        console.log('like',this.$store.getters.token)
+        axios.post(this.$store.state.server+'/api/like/'+post.id, {
+          auth_token: JSON.stringify(this.$store.getters.token)
+        }).then(response => {
+          console.log(response);
+          this.getPosts()
+        }).catch(error => {
+          this.error = error.response.data.message
+          this.errorDialog = true
+        })
+      },
+      dislike(post){
+        console.log('dislike',this.$store.getters.token)
+        axios.post(this.$store.state.server+'/api/dislike/'+post.id, {
+          auth_token: JSON.stringify(this.$store.getters.token)
+        }).then(response => {
+          console.log(response);
+          this.getPosts()
+        }).catch(error => {
+          this.error = error.response.data.message
+          this.errorDialog = true
+        })
+      },
+      addComment(post){
+        axios.post(this.$store.state.server+'/api/comment/'+post.id, {
+          auth_token: JSON.stringify(this.$store.getters.token),
+          body: this.comment
+        }).then( response => {
+          console.log(response);
+          this.getPosts()
+        }
+        ).catch(error => {
+          this.error = error.response.data.message
+          this.errorDialog = true
+        }).finally(()=>{
+          this.comment = ''
+        })
+      },
       getPosts(){
         axios.get(this.$store.state.server+'/api/'+this.$store.state.selectedCategory +'/posts').then(response => {
           this.posts = response.data.posts
           this.category = response.data.category
-          console.log(response);
+          this.posts.push('')
+          this.posts.pop()
+          this.currentPost = this.posts[this.currentPostIndex]
         }) 
       },
-      openPost(post){
-        this.currentPost = post
+      openPost(index){
+        this.currentPostIndex = index
+        this.currentPost = this.posts[index]
         this.showPostDialog = true
       },
       createPost(){
+        console.log(this.$store.getters.token)
         axios.post(this.$store.state.server+'/api/posts/create', {
           title: this.newPost.title,
           body: this.newPost.body,
-          poster_id: '07196a56-08b9-4952-9986-694f9b90a10e',
-          category_id: this.category.id
+          poster_id: this.$store.getters.user.id,
+          category_id: this.category.id,
+          auth_token: JSON.stringify(this.$store.getters.token)
         })
         .then(response => {
           console.log('Post response',response);

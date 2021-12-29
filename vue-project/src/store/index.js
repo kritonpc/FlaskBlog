@@ -12,7 +12,7 @@ export default new Vuex.Store({
     ],
     categories: [
     ],
-    user: {id: null, username: null},
+    user: {id: null, username: null, avatar: null},
     token: null,
     isLoggedIn: false,
   },
@@ -70,7 +70,7 @@ export default new Vuex.Store({
     setToken({commit}, token){
       commit('setToken', token)
     },
-    setLoggedIn({commit}, isLoggedIn){
+    setIsLoggedIn({commit}, isLoggedIn){
       commit('setIsLoggedIn', isLoggedIn)
     }
   },

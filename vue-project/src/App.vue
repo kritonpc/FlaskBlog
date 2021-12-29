@@ -23,7 +23,7 @@
         <v-select v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
       </v-col>
       <v-spacer></v-spacer>
-
+      <!-- {{$store.getters.token}} -->
       <v-btn fab small text
         class="white--text"
       >
@@ -43,10 +43,14 @@
       >
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
-            <v-icon>mdi-account</v-icon>
+            <v-icon v-if="!$store.getters.isLoggedIn">mdi-account</v-icon>
+            <v-avatar color='grey' size='36' v-else>
+              <span v-if="!$store.getters.user.avatar" class='text-h6'>{{$store.getters.user.username.charAt(0)}}</span>
+              <v-img v-else :src="$store.state.server+'/storage/images/'+$store.getters.user.avatar" alt="avatar" />
+            </v-avatar>
           </v-btn>
         </template>
-        <v-list>
+        <v-list v-if="!$store.getters.isLoggedIn">
           <v-list-item>
             <v-list-item-title>
               <router-link to="/login">Login</router-link>
@@ -55,6 +59,18 @@
           <v-list-item>
             <v-list-item-title>
               <router-link to="/register">Register</router-link>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <v-list v-else>
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/profile">{{capitalize($store.getters.user.username)}}</router-link>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/settings">Settings</router-link>
             </v-list-item-title>
           </v-list-item>
         </v-list>
@@ -131,6 +147,18 @@ export default {
     }
   },
   mounted () {
+    if (document.cookie.indexOf('auth_token') !== -1) {
+      axios.post(this.$store.state.server+'/api/validate-token', {
+        auth_token: document.cookie.split('auth_token=')[1]
+      }).then(response => {
+        if (response.data !== 'failed') { 
+          console.log("Setting auth token");
+          this.$store.commit('setUser', response.data),
+          this.$store.commit('setToken', JSON.parse(document.cookie.split('auth_token=')[1]))
+          this.$store.commit('setIsLoggedIn', true)
+        }
+      })
+    }
     axios.get(this.$store.state.server+'/api/categories').then(response => {
       this.categories = response.data
       this.$store.commit('setCategories', response.data)
@@ -138,18 +166,11 @@ export default {
     })
     this.categories = this.$store.state.categories
     // read the auth_token cookie and post to login
-    if (document.cookie.indexOf('auth_token') !== -1) {
-      axios.post(this.$store.state.server+'/api/validate-token', {
-        auth_token: document.cookie.split('auth_token=')[1]
-      }).then(response => {
-        if (response.data === 'success') {
-          this.$store.commit('setUser', response.data)
-          this.$store.commit('setLoggedIn', true)
-        }
-      })
-    }
   },
   methods: {
+    capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1)
+    },
     goToCategory() {
       this.$router.push('/categories/'+this.currentCategory)
       this.$store.commit('setSelectedCategory', this.currentCategory)
