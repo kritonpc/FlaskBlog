@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog width="60vw" v-model="showPostDialog">
+    <v-dialog width="40vw" v-model="showPostDialog">
       <v-card v-if="currentPost !== undefined">
         <v-card-title class="d-flex flex-row">
           <v-avatar size="68">
@@ -15,8 +15,8 @@
             </v-card-subtitle>
           </div>
         </v-card-title>
-        <v-card-text style="color: black">
-          {{currentPost.body}}
+        <v-card-text>
+          <h3>{{currentPost.body}}</h3>
         </v-card-text>
         <v-divider/>
         <v-card-actions>
@@ -55,7 +55,7 @@
                   </div>
               </div>
               <v-spacer/>
-              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-color: white; font-size: 12px' color="primary" max-width='60%'>
+              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-color: white; font-size: 12px' :color="$store.getters.color" max-width='60%'>
                 {{comment.body}}
               </v-card>
             </v-list-item>
@@ -96,16 +96,59 @@
       
       <h3>{{category.description}}</h3>
       <h1 v-if="posts.length === 0">There is nothing to see here yet.</h1>
+      <v-container>
       <div v-for="post,index in posts.slice().reverse()" :key="index">
-        <v-card :color="$store.getters.color" class="mt-3 mx-auto text-left" width="50%" @click="openPost(index)">
+        <!-- <v-card :color="$store.getters.color" class="mt-3 mx-auto text-left" width="50%" @click="openPost(index)">
           <v-card-title>
             {{post.title}}
           </v-card-title>
           <v-card-text>
             {{post.body}}
           </v-card-text>
+        </v-card> -->
+        <v-card  :color="$store.getters.color" class="mt-3 mx-auto text-left" width="100%" @click="openPost(posts.length-index-1)">
+          <v-card-title class="d-flex flex-row">
+            <v-avatar size="68">
+              <v-img :src="$store.state.server+'/storage/images/'+post.poster.avatar" />
+            </v-avatar>
+            <div>
+              <v-card-title>
+                {{post.title}}
+              </v-card-title>
+              <v-card-subtitle>
+                Posted by {{post.poster.nickname}} {{moment(post.timestamp).fromNow()}}
+              </v-card-subtitle>
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <h3>{{post.body}}</h3>
+          </v-card-text>
+          <v-divider/>
+          <v-card-actions>
+            <!-- like button -->
+            <div class="d-flex align-center">
+              <v-icon color='black'>
+                mdi-thumb-up
+              </v-icon>
+            </div>
+            <span class="mr-3" style="font-size: 10px">{{post.likes_count}}</span>
+            <div class="d-flex align-center">
+              <v-icon color='black'>
+                mdi-thumb-down
+              </v-icon>
+            </div>
+            <span class="mr-3" style="font-size: 10px">{{post.dislikes_count}}</span>
+            <!-- comment button -->
+            <div class="d-flex align-center">
+              <v-icon color='black'>
+                mdi-comment
+              </v-icon>
+            </div>
+            <span class="mr-3" style="font-size: 10px">{{post.comments_count}}</span>
+          </v-card-actions>
         </v-card>
       </div>
+      </v-container>
       <v-btn fixed bottom right fab :color='$store.getters.color' class="mx-6 my-10" @click="addPostDialog = true"><v-icon>mdi-plus</v-icon></v-btn>
     </div>
   </div>
@@ -236,3 +279,21 @@
     },
   }
 </script>
+
+<style scoped>
+@media (min-width: 1264px){
+  .container {
+      max-width: 627px;
+  }
+}
+@media (min-width: 700px){
+  .container {
+      max-width: 600px;
+  }
+}
+@media (min-width: 1400px){
+  .container {
+      max-width: 700px;
+  }
+}
+</style>
