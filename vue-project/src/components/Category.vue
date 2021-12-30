@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog width="40vw" v-model="showPostDialog">
+    <v-dialog :width="calculateWidth()" v-model="showPostDialog">
       <v-card v-if="currentPost !== undefined">
         <v-card-title class="d-flex flex-row">
           <v-avatar size="68">
@@ -149,7 +149,7 @@
         </v-card>
       </div>
       </v-container>
-      <v-btn fixed bottom right fab :color='$store.getters.color' class="mx-6 my-10" @click="addPostDialog = true"><v-icon>mdi-plus</v-icon></v-btn>
+      <v-btn v-if="$store.getters.isLoggedIn" fixed bottom right fab :color='$store.getters.color' class="mx-6 my-10" @click="addPostDialog = true"><v-icon>mdi-plus</v-icon></v-btn>
     </div>
   </div>
 </template>
@@ -225,6 +225,13 @@
           this.currentPost = this.posts[this.currentPostIndex]
           this.scrollToBottom()
         }) 
+      },
+      calculateWidth(){
+        if(document.body.clientWidth > 1000){
+          return '50%'
+        }else{
+          return '100%'
+        }  
       },
       openPost(index){
         this.currentPostIndex = index

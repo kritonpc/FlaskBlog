@@ -12,7 +12,7 @@
             alt="Vuetify Logo"
             class="shrink mr-2"
             contain
-            :src="$store.state.server +'/storage/images/logo.png'"
+            :src="$store.state.server +'/storage/images/logo-alb.png'"
             transition="scale-transition"
             width="40"
           />
