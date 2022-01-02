@@ -61,7 +61,7 @@ def createPost():
     data = request.json
     user = VerifyUser(data['auth_token'])
     if user:
-        post = Post(title=data['title'], body=data['body'], category_id=data['category_id'], poster_id=data['poster_id'])
+        post = Post(title=data['title'], body=data['body'], category_id=data['category_id'], poster_id=data['poster_id'], media=data['media'])
         db.session.add(post)
         db.session.commit()
         return 'success'
@@ -231,10 +231,21 @@ def getImageInFolder(image_folder,image_name):
 @app.route('/api/profile/setprofpic', methods=['POST'])
 def setProfilePic():
     data = request.json
-    print(f'Data: {data}')
     user = VerifyUser(data['auth_token'])
     if user:
         user.avatar = data['avatar']
+        db.session.commit()
+        return jsonify(user.serialize)
+    else:
+        return 'failed'
+
+@app.route('/api/profile/setcolor', methods=['POST'])
+def setColor():
+    data = request.json
+    print(f'Data: {data}')
+    user = VerifyUser(data['auth_token'])
+    if user:
+        user.color = data['color']
         db.session.commit()
         return jsonify(user.serialize)
     else:

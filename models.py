@@ -90,6 +90,7 @@ class Post(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    media = db.Column(db.String(128))
     likes = db.relationship('Like', backref='post', lazy='dynamic')
     dislikes = db.relationship('Dislike', backref='post', lazy='dynamic')
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
@@ -112,7 +113,8 @@ class Post(db.Model):
             "dislikes": serializer(self.dislikes),
             "comments": serializer(self.comments),
             "poster": self.poster.info,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp,
+            "media": self.media
         }
 
 class CategoryLike(db.Model):

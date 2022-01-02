@@ -33,13 +33,8 @@
     <v-card width='400px'>
       <div>
         <h2>Upload Picture</h2>
-        <v-img v-if="picture" :src="$store.state.server+'/storage/images/'+picture" width="400" contain>
-        </v-img>
-        <hr/>
-        <label>
-          <input accept="image/*" type="file" @change="handleFileUpload( $event )"/>
-        </label>
-        <br>
+        <v-img v-if="picture" :src="$store.state.server+'/storage/images/'+picture" width="400" contain></v-img>
+        <input accept="image/*" type="file" @change="handleFileUpload( $event )"/>
         <v-btn v-if="file" @click="submitFile()">Upload</v-btn>
         <v-btn v-if="picture" @click="setProfPic()">Set as profile</v-btn>
       </div>
@@ -81,6 +76,14 @@
       setColor(color) {
         this.selectedColor = color
         this.$store.commit('setColor', color)
+        if (this.$store.getters.isLoggedIn) {
+          axios.post(this.$store.state.server+'/api/profile/setcolor', {
+            auth_token: document.cookie.split('auth_token=')[1],
+            color: color
+          }).then(response => {
+            console.log(response);
+          })
+        }
       },
       handleFileUpload( event ){
         this.file = event.target.files[0];

@@ -19,9 +19,9 @@
         </router-link>
         Saidit
       </div>
-      <v-col cols='2' class="ml-4">
-        <v-select v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
-      </v-col>
+      <div class="ml-4" style="width: 250px">
+        <v-select  v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
+      </div>
       <v-spacer></v-spacer>
       <v-menu
         ref="colorMenu"
@@ -211,12 +211,18 @@ export default {
   computed: {
     selectedCategory() {
       return this.$store.state.selectedCategory
-    }
+    },
+    storeColor() {
+      return this.$store.getters.color
+    },
   },
   watch: {
     selectedCategory(newValue) {
       this.currentCategory = newValue
-    }
+    },
+    storeColor(newValue) {
+      this.selectedColor = newValue
+    },
   },
   mounted () {
     if (document.cookie.indexOf('auth_token') !== -1) {
@@ -246,6 +252,14 @@ export default {
     setColor(color) {
         this.selectedColor = color
         this.$store.commit('setColor', color)
+        if (this.$store.getters.isLoggedIn) {
+          axios.post(this.$store.state.server+'/api/profile/setcolor', {
+            auth_token: document.cookie.split('auth_token=')[1],
+            color: color
+          }).then(response => {
+            console.log(response);
+          })
+        }
     },
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1)

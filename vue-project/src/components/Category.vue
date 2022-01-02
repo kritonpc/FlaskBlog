@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-dialog :width="calculateWidth()" v-model="showPostDialog">
-      <v-card v-if="currentPost !== undefined">
+    <v-dialog v-model="showPostDialog" :width="calculateWidth()">
+      <v-card class='mx-auto' light v-if="currentPost !== undefined" rounded='lg'>
         <v-card-title class="d-flex flex-row">
           <v-avatar size="68">
             <v-img :src="$store.state.server+'/storage/images/'+currentPost.poster.avatar" />
@@ -17,6 +17,9 @@
         </v-card-title>
         <v-card-text>
           <h3>{{currentPost.body}}</h3>
+        </v-card-text>
+        <v-card-text v-if="currentPost.media">
+          <v-img :src="$store.state.server+'/storage/images/'+currentPost.media" width="100%"></v-img>
         </v-card-text>
         <v-divider/>
         <v-card-actions>
@@ -43,7 +46,7 @@
         </v-card-actions>
         <v-divider/>
         <v-card-actions v-if="currentPost.comments_count>0">
-          <v-list id="scroll" style="max-height: 50vh; width:100%" class="overflow-y-auto">
+          <v-list id="scroll" style="width:100%" :style="currentPost.media ? 'max-height: 20vh' : 'max-height: 50vh' " class="overflow-y-auto">
             <v-list-item v-for="comment,i in currentPost.comments" :key="i" class="my-2 align-start">
               <div class="d-flex flex-row align-center">
                   <v-avatar size='36'>
@@ -75,7 +78,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="addPostDialog">
+    <v-dialog :width="calculateWidth()" v-model="addPostDialog">
       <v-card>
         <v-card-title>
           <span class="headline">Add Post</span>
@@ -83,8 +86,16 @@
         <v-card-text>
           <v-text-field v-model="newPost.title" label="Name" required></v-text-field>
           <v-textarea v-model="newPost.body" label="Content" required></v-textarea>
+          <div v-if='showUpload'>
+            <label>Upload Picture</label>
+            <v-img v-if="picture" :src="$store.state.server+'/storage/images/'+picture" width="400" contain></v-img>
+            <input accept="image/*" type="file" @change="handleFileUpload( $event )"/>
+            <!-- <v-btn v-if="file" @click="submitFile()">Upload</v-btn> -->
+          </div>
         </v-card-text>
-        <v-card-actions class="justify-end" >
+        <v-card-actions class="" >
+          <v-btn text fab @click="showUpload = !showUpload"><v-icon :color="showUpload ? 'blue' : 'black'">mdi-image-plus</v-icon></v-btn>
+          <v-spacer/>
           <v-btn class="ma-2" @click="createPost">Post</v-btn>
         </v-card-actions>
       </v-card>
@@ -101,13 +112,16 @@
           </v-btn>
         </div>
         </h1></v-chip>
+        <br>
+        <v-chip color='black'>
+        <h3 style='color: white'>{{category.description}}</h3>
+        </v-chip>
       </v-img>
       
-      <h3>{{category.description}}</h3>
       <h1 v-if="posts.length === 0">There is nothing to see here yet.</h1>
       <v-container>
       <div v-for="post,index in posts.slice().reverse()" :key="index">
-        <v-card  :color="$store.getters.color" class="mt-3 mx-auto text-left" width="100%" @click="openPost(posts.length-index-1)">
+        <v-card rounded='xl' :color="$store.getters.color" class="mt-3 mx-auto text-left" width="100%" @click="openPost(posts.length-index-1)">
           <v-card-title class="d-flex flex-row">
             <v-avatar size="68">
               <v-img :src="$store.state.server+'/storage/images/'+post.poster.avatar" />
@@ -124,17 +138,20 @@
           <v-card-text>
             <h3>{{post.body}}</h3>
           </v-card-text>
+          <v-card-text v-if="post.media">
+            <v-img :src="$store.state.server+'/storage/images/'+post.media" width="100%"></v-img>
+          </v-card-text>
           <v-divider/>
-          <v-card-actions>
+          <v-card-actions class="pb-3 pl-4">
             <!-- like button -->
             <div class="d-flex align-center">
-              <v-icon color='black'>
+              <v-icon :color='hasUserLiked(post)'>
                 mdi-thumb-up
               </v-icon>
             </div>
             <span class="mr-3" style="font-size: 10px">{{post.likes_count}}</span>
             <div class="d-flex align-center">
-              <v-icon color='black'>
+              <v-icon :color='hasUserDisliked(post)'>
                 mdi-thumb-down
               </v-icon>
             </div>
@@ -170,10 +187,13 @@
         currentCategory:this.$attrs.category,
         addPostDialog: false,
         showPostDialog: false,
+        showUpload: false,
         newPost:{
           title:'',
           body: ''
         },
+        file: '',
+        picture: null,
       }
     },
     methods: {
@@ -255,9 +275,9 @@
       },
       calculateWidth(){
         if(document.body.clientWidth > 1000){
-          return '50%'
+          return '50vw'
         }else{
-          return '100%'
+          return '100vw%'
         }  
       },
       openPost(index){
@@ -282,7 +302,8 @@
           body: this.newPost.body,
           poster_id: this.$store.getters.user.id,
           category_id: this.category.id,
-          auth_token: JSON.stringify(this.$store.getters.token)
+          auth_token: JSON.stringify(this.$store.getters.token),
+          media: this.picture
         })
         .then(response => {
           console.log('Post response',response);
@@ -303,7 +324,29 @@
             ctr.scrollTop = ctr.scrollHeight;
           }
         }, 1);
-      }
+      },
+      handleFileUpload( event ){
+        this.file = event.target.files[0];
+        this.picture = null
+        this.submitFile()
+      },
+      submitFile(){
+        let formData = new FormData();
+        formData.append('file', this.file);
+        axios.post( this.$store.state.server+'/api/upload',
+            formData,
+            {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+          }
+        ).then(response => {
+          this.picture = response.data
+        })
+        .catch(function(){
+          console.log('FAILURE!!');
+        });
+      },
     },
     watch: {
       $attrs(newValue, oldValue) {
