@@ -6,6 +6,8 @@ import vuetify from './plugins/vuetify'
 
 Vue.config.productionTip = false
 
+document.title = 'Saidit'
+
 new Vue({
   router,
   store,
