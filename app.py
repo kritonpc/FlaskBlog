@@ -5,7 +5,7 @@ from flask_cors import CORS
 from link_preview import link_preview
 import uuid, json
 from datetime import datetime,date
-  
+from PIL import Image
 
 from config import Config
 
@@ -19,16 +19,12 @@ app.config['SECRET_KEY'] = 'TsOpAnOxWrIaThS'
 from models import *
 cors = CORS(app, resources={r'/*': {'origins': '*'}})
 
-# from flask_socketio import SocketIO, emit, join_room, rooms
-
 
 def serializer(object):
     ser = []
     for item in object:
         ser.append(item.serialize)
     return ser
-
-# socketio = SocketIO(app, cors_allowed_origins='*')
 
 
 def VerifyUser(token):
@@ -41,23 +37,6 @@ def VerifyUser(token):
             return False
     else:
         return False
-
-
-# @app.route('/api/login', methods=['POST'])
-# def loginOLD():
-#     data = request.json
-#     # print(f'Login {data}')
-#     # print(f'------------------------------------{request.remote_addr}')
-#     loggedInUser = db.session.query(User).filter_by(username=data['username'].lower()).first()
-#     if loggedInUser:
-#         if loggedInUser.password_hash == data['password']:
-#             loggedInUser.auth_token = uuid.uuid4().hex
-#             loggedInUser.ip = request.remote_addr
-#             db.session.commit()
-#             auth_token = jsonify({'username':loggedInUser.username, 'id':loggedInUser.id, 'auth_token':loggedInUser.auth_token})
-#             return auth_token
-#     else:
-#         return 'failed'
 
 
 @app.route('/api/categories', methods=['GET'])
@@ -249,6 +228,17 @@ def getImageInFolder(image_folder,image_name):
     image_file = open(f'images/{image_folder}/{image_name}', 'rb')
     return send_file(image_file, mimetype='image')
 
+@app.route('/api/profile/setprofpic', methods=['POST'])
+def setProfilePic():
+    data = request.json
+    print(f'Data: {data}')
+    user = VerifyUser(data['auth_token'])
+    if user:
+        user.avatar = data['avatar']
+        db.session.commit()
+        return jsonify(user.serialize)
+    else:
+        return 'failed'
 
 # upload file route
 @app.route('/api/upload', methods=['POST'])
@@ -267,7 +257,11 @@ def upload():
         if file:
             extension = file.filename.split('.')[-1]
             filename = str(uuid.uuid4()) + '.' + extension
-            file.save(f'images/{filename}')
+            # resize picture to a smaller size
+            img = Image.open(file)
+            img.thumbnail((500, 500))
+            img.save(f'images/{filename}')
+            # file.save(f'images/{filename}')
             return filename
         else:
             return 'failed'
