@@ -12,10 +12,11 @@ export default new Vuex.Store({
     ],
     categories: [
     ],
-    user: {id: null, username: null, avatar: null},
+    user: {id: null, username: null, avatar: null, nickname: null},
     token: null,
     isLoggedIn: false,
     color: 'primary',
+    likedCategories: [],
   },
   mutations: {
     addPost(state, post){
@@ -47,6 +48,9 @@ export default new Vuex.Store({
     },
     setColor(state, color){
       state.color = color
+    },
+    setLikedCategories(state, categories){
+      state.likedCategories = categories
     }
   },
   actions: {
@@ -79,6 +83,9 @@ export default new Vuex.Store({
     },
     setColor({commit}, color){
       commit('setColor', color)
+    },
+    setLikedCategories({commit}, categories){
+      commit('setLikedCategories', categories)
     }
   },
   getters: {
@@ -88,7 +95,8 @@ export default new Vuex.Store({
     user: state => state.user,
     token: state => state.token,
     isLoggedIn: state => state.isLoggedIn,
-    color: state => state.color
+    color: state => state.color,
+    likedCategories: state => state.likedCategories
   },
   modules: {
   }

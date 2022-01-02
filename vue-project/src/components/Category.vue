@@ -91,21 +91,22 @@
     </v-dialog>
     <div class="text-center">
       <v-img v-if="category.image !== undefined" width="100%" max-height="180px" class="align-center" :src="$store.state.server+'/storage/images/'+category.image">
-      <v-chip large class='mt-2' color='black'><h1 style='color: white'>{{category.title}}</h1></v-chip>
+      <v-chip large class='mt-2' color='black'><h1 style='color: white'>
+        <div>
+          <span>{{category.title}}</span>
+          <v-btn fab x-small class="ml-2" @click="likeCategory">
+            <v-icon size='24' :color='isCategoryLiked()'>
+              mdi-heart
+            </v-icon>
+          </v-btn>
+        </div>
+        </h1></v-chip>
       </v-img>
       
       <h3>{{category.description}}</h3>
       <h1 v-if="posts.length === 0">There is nothing to see here yet.</h1>
       <v-container>
       <div v-for="post,index in posts.slice().reverse()" :key="index">
-        <!-- <v-card :color="$store.getters.color" class="mt-3 mx-auto text-left" width="50%" @click="openPost(index)">
-          <v-card-title>
-            {{post.title}}
-          </v-card-title>
-          <v-card-text>
-            {{post.body}}
-          </v-card-text>
-        </v-card> -->
         <v-card  :color="$store.getters.color" class="mt-3 mx-auto text-left" width="100%" @click="openPost(posts.length-index-1)">
           <v-card-title class="d-flex flex-row">
             <v-avatar size="68">
@@ -177,6 +178,18 @@
     },
     methods: {
       moment,
+      likeCategory(){
+        console.log('Like/Unlike',this.currentCategory);
+        axios.post(this.$store.state.server+'/api/categories/like/'+this.$store.getters.selectedCategory, {
+          auth_token: JSON.stringify(this.$store.getters.token)
+        }).then(response => {
+          console.log(response.data);
+          this.$store.commit('setLikedCategories', response.data.liked_categories);
+        }).catch(error => {
+          this.error = error.response.data.message
+          this.errorDialog = true
+        })
+      },
       like(post){
         console.log('like',this.$store.getters.token)
         axios.post(this.$store.state.server+'/api/like/'+post.id, {
@@ -239,6 +252,15 @@
         this.showPostDialog = true
         this.scrollToBottom()
       },
+      isCategoryLiked(){
+        console.log();
+        if(this.$store.getters.likedCategories.some(e => e.category_name === this.category.title)){
+          console.log('CAT NAME:',this.category.title);
+          return 'red'
+        }else{
+          return 'grey'
+        }
+      },
       createPost(){
         console.log(this.$store.getters.token)
         axios.post(this.$store.state.server+'/api/posts/create', {
@@ -270,8 +292,12 @@
       }
     },
     watch: {
-      $attrs() {
-        this.getPosts()
+      $attrs(newValue, oldValue) {
+        console.log('watch');
+        if(oldValue !== this.$store.getters.selectedCategory){
+          this.$store.commit('setSelectedCategory', this.$attrs.category)
+          this.getPosts()
+        }
       }
     },
     mounted () {

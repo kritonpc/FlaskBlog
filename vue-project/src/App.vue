@@ -125,6 +125,23 @@
       bottom
       temporary
     >
+      <v-card v-if="$store.getters.isLoggedIn">
+        <v-card-title class="d-flex flex-row">
+          <v-btn text fab x-large @click="$router.push('/profile')">
+            <v-avatar size="68">
+              <v-img :src="$store.state.server+'/storage/images/'+$store.getters.user.avatar" />
+            </v-avatar>
+          </v-btn>
+          <div>
+            <v-card-title>
+              {{$store.getters.user.nickname}}
+            </v-card-title>
+            <v-card-subtitle>
+              @{{$store.getters.user.username}}
+            </v-card-subtitle>
+          </div>
+        </v-card-title>
+      </v-card>
       <v-list
         nav
         dense
@@ -133,29 +150,20 @@
           v-model="group"
           active-class="deep-purple--text text--accent-4"
         >
-          <router-link to="/categories/Animals">
-            <v-list-item>
-              <v-list-item-title>
-                Animals
-              </v-list-item-title>
-            </v-list-item>
-          </router-link>
-
-          <router-link to="/categories/Engineering">
-            <v-list-item>
-              <v-list-item-title>
-                Engineering
-              </v-list-item-title>
-            </v-list-item>
-          </router-link>
-          
-          <router-link to="/categories/Gaming">
-            <v-list-item>
-              <v-list-item-title>
-                Gaming
-              </v-list-item-title>
-            </v-list-item>
-          </router-link>
+        <div v-for="category,i in $store.getters.likedCategories" :key="i">
+          <v-card @click="$router.push('/categories/'+category.category.title)" class="pa-0 my-1">
+            <v-card-title class="d-flex flex-row py-1 px-2">
+                <v-avatar size="40">
+                  <v-img :src="$store.state.server+'/storage/images/'+category.category.image" />
+                </v-avatar>
+              <div>
+                <v-card-title class="py-2">
+                  {{category.category.title}}
+                </v-card-title>
+              </div>
+            </v-card-title>
+          </v-card>
+        </div>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
@@ -216,6 +224,8 @@ export default {
           console.log("Setting auth token");
           this.$store.commit('setUser', response.data),
           this.$store.commit('setColor', response.data.color)
+          this.selectedColor = response.data.color
+          this.$store.commit('setLikedCategories', response.data.liked_categories)
           this.$store.commit('setToken', JSON.parse(document.cookie.split('auth_token=')[1]))
           this.$store.commit('setIsLoggedIn', true)
         }

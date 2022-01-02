@@ -24,6 +24,7 @@ class User(db.Model):
     ip = db.Column(db.String(15))
     auth_token = db.Column(db.String(32), index=True, unique=True)
     color = db.Column(db.String(32), default='#000000')
+    liked_categories = db.relationship('CategoryLike', backref='user' , lazy='joined')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -42,7 +43,8 @@ class User(db.Model):
             "password_hash": self.password_hash,
             "ip": self.ip,
             "auth_token": self.auth_token,
-            "color": self.color
+            "color": self.color,
+            "liked_categories": serializer(self.liked_categories)
         }
 
     @property
@@ -54,11 +56,18 @@ class User(db.Model):
             "avatar": self.avatar,
         }
 
+    @property
+    def favorites(self):
+        return {
+            "liked_categories": serializer(self.liked_categories)
+        }
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30))
-    desctiption = db.Column(db.String(256))
+    description = db.Column(db.String(256))
     image = db.Column(db.String(256))
+    likes = db.relationship('CategoryLike', backref='categoryLikes', lazy='dynamic')
 
     def __repr__(self):
         return '<Category {}>'.format(self.title)
@@ -68,7 +77,7 @@ class Category(db.Model):
         return {
             "id": self.id,
             "title": self.title,
-            "desctiption": self.desctiption,
+            "description": self.description,
             "image": self.image
         }
 
@@ -104,6 +113,26 @@ class Post(db.Model):
             "comments": serializer(self.comments),
             "poster": self.poster.info,
             "timestamp": self.timestamp
+        }
+
+class CategoryLike(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    user_id = db.Column(db.String(64), db.ForeignKey('user.id'))
+    category = db.relationship('Category', backref='catlikes')
+    
+
+    def __repr__(self):
+        return '<CategoryLike {}>'.format(self.id)
+
+    @property
+    def serialize(self):
+        return {
+            "id": self.id,
+            "category_id": self.category_id,
+            "category_name": self.category.title,
+            "user_id": self.user_id,
+            "category": self.category.serialize
         }
 
 class Like(db.Model):

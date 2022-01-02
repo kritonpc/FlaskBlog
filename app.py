@@ -165,6 +165,30 @@ def unDislikePost(post_id):
         return 'failed'
 
 
+@app.route('/api/categories/like/<category_name>', methods=['POST'])
+def likeCategory(category_name):
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        category = db.session.query(Category).filter_by(title=category_name).first()
+        if category:
+            if not category.likes.filter_by(user_id=user.id, category_id=category.id).first():
+                like = CategoryLike(user_id=user.id, category_id=category.id)
+                db.session.add(like)
+                db.session.commit()
+                print(f'Like {category.title}')
+                return user.favorites
+            else:
+                like = db.session.query(CategoryLike).filter_by(category_id=category.id).first()
+                db.session.delete(like)
+                db.session.commit()
+                print(f'Unlike {category.title}')
+                return user.favorites
+        else:
+            return 'failed'
+    else:
+        return 'failed'
+
 @app.route('/api/comment/<post_id>', methods=['POST'])
 def commentPost(post_id):
     data = request.json
@@ -215,7 +239,7 @@ def validateToken():
     data = request.json
     user = VerifyUser(data['auth_token'])
     if user:
-        return jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar, 'color':user.color})
+        return jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar, 'color':user.color, 'nickname':user.nickname, 'liked_categories':serializer(user.liked_categories)})
     else:
         return 'failed'
 
