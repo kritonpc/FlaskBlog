@@ -22,13 +22,13 @@
         <v-card-actions>
           <!-- like button -->
           <v-btn x-small text fab @click="like(currentPost)" :disabled="!$store.getters.isLoggedIn">
-            <v-icon>
+            <v-icon :color='hasUserLiked(currentPost)'>
               mdi-thumb-up
             </v-icon>
           </v-btn>
           <span class="mr-3" style="font-size: 10px">{{currentPost.likes_count}}</span>
           <v-btn x-small text fab @click="dislike(currentPost)" :disabled="!$store.getters.isLoggedIn">
-            <v-icon>
+            <v-icon :color='hasUserDisliked(currentPost)'>
               mdi-thumb-down
             </v-icon>
           </v-btn>
@@ -214,6 +214,20 @@
           this.errorDialog = true
         })
       },
+      hasUserLiked(post){
+        if (post.likes.filter(like => like.user_id === this.$store.getters.user.id).length > 0) {
+          return 'blue'
+        }else{
+          return 'black'
+        }
+      },
+      hasUserDisliked(post){
+        if (post.dislikes.filter(dislike => dislike.user_id === this.$store.getters.user.id).length > 0) {
+          return 'blue'
+        }else{
+          return 'black'
+        }
+      },
       addComment(post){
         axios.post(this.$store.state.server+'/api/comment/'+post.id, {
           auth_token: JSON.stringify(this.$store.getters.token),
@@ -293,7 +307,6 @@
     },
     watch: {
       $attrs(newValue, oldValue) {
-        console.log('watch');
         if(oldValue !== this.$store.getters.selectedCategory){
           this.$store.commit('setSelectedCategory', this.$attrs.category)
           this.getPosts()

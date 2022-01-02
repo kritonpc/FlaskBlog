@@ -150,6 +150,9 @@
           v-model="group"
           active-class="deep-purple--text text--accent-4"
         >
+        <div class="text-center">
+          <h3>Liked Categories</h3>
+        </div>
         <div v-for="category,i in $store.getters.likedCategories" :key="i">
           <v-card @click="$router.push('/categories/'+category.category.title)" class="pa-0 my-1">
             <v-card-title class="d-flex flex-row py-1 px-2">

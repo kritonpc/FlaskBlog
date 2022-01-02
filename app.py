@@ -96,31 +96,18 @@ def likePost(post_id):
     if user:
         post = db.session.query(Post).filter_by(id=post_id).first()
         if post:
+            if post.dislikes.filter_by(user_id=user.id).first():
+                db.session.delete(post.dislikes.filter_by(user_id=user.id).first())
+                db.session.commit()
             if not post.likes.filter_by(user_id=user.id).first():
                 like = Like(user_id=user.id, post_id=post.id)
                 db.session.add(like)
                 db.session.commit()
                 return 'success'
             else:
-                return 'failed'
-        else:
-            return 'failed'
-    else:
-        return 'failed'
-
-@app.route('/api/unlike/<post_id>', methods=['POST'])
-def unlikePost(post_id):
-    data = request.json
-    user = VerifyUser(data['auth_token'])
-    if user:
-        post = db.session.query(Post).filter_by(id=post_id).first()
-        if post:
-            if user.id in post.likes:
-                post.likes.remove(user.id)
+                db.session.delete(post.likes.filter_by(user_id=user.id).first())
                 db.session.commit()
                 return 'success'
-            else:
-                return 'failed'
         else:
             return 'failed'
     else:
@@ -134,31 +121,18 @@ def dislikePost(post_id):
     if user:
         post = db.session.query(Post).filter_by(id=post_id).first()
         if post:
+            if post.likes.filter_by(user_id=user.id).first():               
+                db.session.delete(post.likes.filter_by(user_id=user.id).first())
+                db.session.commit()
             if not post.dislikes.filter_by(user_id=user.id).first():
                 dislike = Dislike(user_id=user.id, post_id=post.id)
                 db.session.add(dislike)
                 db.session.commit()
                 return 'success'
             else:
-                return 'failed'
-        else:
-            return 'failed'
-    else:
-        return 'failed'
-
-@app.route('/api/undislike/<post_id>', methods=['POST'])
-def unDislikePost(post_id):
-    data = request.json
-    user = VerifyUser(data['auth_token'])
-    if user:
-        post = db.session.query(Post).filter_by(id=post_id).first()
-        if post:
-            if user.id in post.likes:
-                post.dislikes.remove(user.id)
+                db.session.delete(post.dislikes.filter_by(user_id=user.id).first())
                 db.session.commit()
                 return 'success'
-            else:
-                return 'failed'
         else:
             return 'failed'
     else:
