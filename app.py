@@ -182,7 +182,7 @@ def login():
             user.auth_token = uuid.uuid4().hex
             user.ip = request.remote_addr
             db.session.commit()
-            response = jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar, 'auth_token':user.auth_token, 'user': user.serialize})
+            response = jsonify({'auth_token':{'username':user.username, 'id':user.id, 'avatar':user.avatar, 'auth_token':user.auth_token,}, 'user': user.serialize})
             return response
         else:
             return 'failed'

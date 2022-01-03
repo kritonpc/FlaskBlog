@@ -42,8 +42,9 @@ export default {
                 username: this.username,
                 password: crypto.createHash('sha256').update(this.password).digest('hex'),
             }).then(response => {
-                if(response.data.auth_token){
+                if(response.data){
                     this.$store.commit('setUser', response.data.user)
+                    console.log('auth_token', response.data.auth_token);
                     this.$store.commit('setToken', response.data.auth_token)
                     this.$store.commit('setIsLoggedIn', true)
                     document.cookie = 'auth_token='+JSON.stringify(response.data.auth_token)
