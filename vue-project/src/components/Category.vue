@@ -105,7 +105,7 @@
       <v-chip large class='mt-2' color='black'><h1 style='color: white'>
         <div>
           <span>{{category.title}}</span>
-          <v-btn fab x-small class="ml-2" @click="likeCategory">
+          <v-btn v-if="$store.getters.isLoggedIn" fab x-small class="ml-2" @click="likeCategory">
             <v-icon size='24' :color='isCategoryLiked()'>
               mdi-heart
             </v-icon>
