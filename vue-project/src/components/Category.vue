@@ -29,20 +29,20 @@
               mdi-thumb-up
             </v-icon>
           </v-btn>
-          <span class="mr-3" style="font-size: 10px">{{currentPost.likes_count}}</span>
+          <span class="mr-3" style="font-size: 14px">{{currentPost.likes_count}}</span>
           <v-btn x-small text fab @click="dislike(currentPost)" :disabled="!$store.getters.isLoggedIn">
             <v-icon :color='hasUserDisliked(currentPost)'>
               mdi-thumb-down
             </v-icon>
           </v-btn>
-          <span class="mr-3" style="font-size: 10px">{{currentPost.dislikes_count}}</span>
+          <span class="mr-3" style="font-size: 14px">{{currentPost.dislikes_count}}</span>
           <!-- comment button -->
           <v-btn x-small text fab :disabled="!$store.getters.isLoggedIn">
             <v-icon>
               mdi-comment
             </v-icon>
           </v-btn>
-          <span class="mr-3" style="font-size: 10px">{{currentPost.comments_count}}</span>
+          <span class="mr-3" style="font-size: 14px">{{currentPost.comments_count}}</span>
         </v-card-actions>
         <v-divider/>
         <v-card-actions v-if="currentPost.comments_count>0">
@@ -149,20 +149,20 @@
                 mdi-thumb-up
               </v-icon>
             </div>
-            <span class="mr-10" style="font-size: 20px">{{post.likes_count}}</span>
+            <span class="ml-1 mr-4" style="font-size: 14px">{{post.likes_count}}</span>
             <div class="d-flex align-center">
               <v-icon :color='hasUserDisliked(post)'>
                 mdi-thumb-down
               </v-icon>
             </div>
-            <span class="mr-10" style="font-size: 20px">{{post.dislikes_count}}</span>
+            <span class="ml-1 mr-4" style="font-size: 14px">{{post.dislikes_count}}</span>
             <!-- comment button -->
             <div class="d-flex align-center">
               <v-icon color='black'>
                 mdi-comment
               </v-icon>
             </div>
-            <span class="mr-10" style="font-size: 20px">{{post.comments_count}}</span>
+            <span class="ml-1 mr-4" style="font-size: 14px">{{post.comments_count}}</span>
           </v-card-actions>
         </v-card>
       </div>

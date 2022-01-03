@@ -235,7 +235,6 @@ export default {
         auth_token: document.cookie.split('auth_token=')[1]
       }).then(response => {
         if (response.data !== 'failed') { 
-          console.log("Setting auth token");
           this.$store.commit('setUser', response.data),
           this.$store.commit('setColor', response.data.color)
           this.selectedColor = response.data.color
@@ -248,7 +247,6 @@ export default {
     axios.get(this.$store.state.server+'/api/categories').then(response => {
       this.categories = response.data
       this.$store.commit('setCategories', response.data)
-      console.log(response);
     })
     this.categories = this.$store.state.categories
     // read the auth_token cookie and post to login
