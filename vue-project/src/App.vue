@@ -106,7 +106,7 @@
         <v-list v-else>
           <v-list-item>
             <v-list-item-title>
-              <router-link to="/profile">{{capitalize($store.getters.user.username)}}</router-link>
+              <router-link to="/profile">{{$store.getters.user.nickname}}</router-link>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
