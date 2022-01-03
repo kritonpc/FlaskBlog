@@ -43,10 +43,10 @@ export default {
                 password: crypto.createHash('sha256').update(this.password).digest('hex'),
             }).then(response => {
                 if(response.data.auth_token){
-                    this.$store.commit('setUser', {id: response.data.id, username: response.data.username, avatar: response.data.avatar})
-                    this.$store.commit('setToken', response.data)
+                    this.$store.commit('setUser', response.data.user)
+                    this.$store.commit('setToken', response.data.auth_token)
                     this.$store.commit('setIsLoggedIn', true)
-                    document.cookie = 'auth_token='+JSON.stringify(response.data)
+                    document.cookie = 'auth_token='+JSON.stringify(response.data.auth_token)
                     this.$router.push('/')
                 }
                 else{
