@@ -131,7 +131,7 @@
       temporary
     >
       <v-card v-if="$store.getters.isLoggedIn" class="pa-0 ma-2">
-        <v-card-title class="d-flex flex-row">
+        <v-card-title class="d-flex flex-row py-1 px-2">
           <v-btn text fab x-large @click="$router.push('/profile')">
             <v-avatar size="68">
               <v-img :src="$store.state.server+'/storage/images/'+$store.getters.user.avatar" />
@@ -276,3 +276,38 @@ export default {
   },
 };
 </script>
+
+<style>
+/* html {
+  overflow: hidden !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+} */
+
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #b1b1b12c;
+    border-radius: 20px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: rgb(90, 90, 90);
+    border-radius: 20px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+</style>
