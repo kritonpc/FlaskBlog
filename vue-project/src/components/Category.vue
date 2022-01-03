@@ -131,7 +131,7 @@
                 {{post.title}}
               </v-card-title>
               <v-card-subtitle>
-                Posted by {{post.poster.nickname}} {{moment(post.timestamp).fromNow()}}
+                Posted by <strong>{{post.poster.nickname}}</strong> {{moment(post.timestamp).fromNow()}}
               </v-card-subtitle>
             </div>
           </v-card-title>

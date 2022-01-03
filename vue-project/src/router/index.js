@@ -35,6 +35,12 @@ const routes = [
     meta: { title: 'Saidit' }
   },
   {
+    path: '/logout',
+    name: 'Logout',
+    component: () => import('../views/Logout.vue'),
+    meta: { title: 'Saidit' }
+  },
+  {
     path: '/register',
     name: 'Register',
     component: () => import('../views/Register.vue'),

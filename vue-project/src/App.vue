@@ -114,6 +114,11 @@
               <router-link to="/settings">Settings</router-link>
             </v-list-item-title>
           </v-list-item>
+          <v-list-item>
+            <v-list-item-title>
+              <router-link to="/logout">Logout</router-link>
+            </v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-menu>
     </v-app-bar>
