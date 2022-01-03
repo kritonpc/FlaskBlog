@@ -130,7 +130,7 @@
       bottom
       temporary
     >
-      <v-card v-if="$store.getters.isLoggedIn">
+      <v-card v-if="$store.getters.isLoggedIn" class="pa-0 ma-2">
         <v-card-title class="d-flex flex-row">
           <v-btn text fab x-large @click="$router.push('/profile')">
             <v-avatar size="68">

@@ -1,127 +1,143 @@
 <template>
-    <div class="text-center">
-        <v-dialog width='40vw' v-model="successDialog">
-            <v-card>
-                <v-card-title class='justify-center'>
-                    You have succesfully registered!
-                </v-card-title>
-                <v-card-actions class="justify-center">
-                    <v-btn class="ma-2" @click="$router.push('/login')">Login</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-        <v-dialog width='40vw' v-model="errorDialog">
-            <v-card>
-                <v-card-title class='justify-center'>
-                    <span>There was an error registering you! Please check your credentials and try again.</span>
-                </v-card-title>
-                <v-card-actions class="justify-center">
-                    <v-btn class="ma-2" @click="errorDialog=false">Login</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-        <v-card width="50vw" class="mx-auto my-10">
-            <v-card-title>Register</v-card-title>
-            <v-card-text>
-                <v-form
-                    ref="form"
-                    v-model="valid"
-                    lazy-validation
-                >
-                    <v-text-field
-                        v-model="username"
-                        :rules="nameRules"
-                        label="Username"
-                        required
-                    ></v-text-field>
-                    <v-text-field
-                        v-model="nickname"
-                        :rules="nicknameRules"
-                        placeholder="How do you want people to call you?"
-                        label="Nickname"
-                        required
-                    ></v-text-field>
-                    <v-text-field
-                    v-model="email"
-                    :rules="emailRules"
-                    label="E-mail"
-                    required
-                    ></v-text-field>
-                    <v-text-field
-                    v-model="password"
-                    :rules="passwordRules"
-                    type="password"
-                    label="Password"
-                    required
-                    ></v-text-field>
-                    <v-text-field
-                    v-model="password_confirmation"
-                    :rules="confirmPasswordRules"
-                    type="password"
-                    label="Confirm Password"
-                    required
-                    ></v-text-field>
-                    <!-- date of birth -->
-                    <v-menu
-                        ref="menu"
-                        v-model="menu"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                        >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                            v-model="dob"
-                            label="Birthday date"
-                            prepend-icon="mdi-calendar"
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                            ></v-text-field>
-                        </template>
-                        <v-date-picker
-                            v-model="dob"
-                            :active-picker.sync="activePicker"
-                            :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"
-                            min="1950-01-01"
-                            @change="save"
-                        ></v-date-picker>
-                        </v-menu>
-                    <v-radio-group 
-                        label="Gender: "
-                        v-model="gender"
-                        row
-                        :rules="[v => v !== undefined || 'Item is required']"
+    <div>
+        <div v-if="$store.getters.isLoggedIn" class="text-center">
+            <h1 class="pt-10">You are already logged in.</h1>
+            <v-btn>
+                <router-link to="/profile">Go to profile</router-link>
+            </v-btn>
+        </div>
+        <div v-else class="text-center">
+            <v-dialog width='40vw' v-model="successDialog">
+                <v-card>
+                    <v-card-title class='justify-center'>
+                        You have succesfully registered!
+                    </v-card-title>
+                    <v-card-actions class="justify-center">
+                        <v-btn class="ma-2" @click="$router.push('/login')">Login</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-dialog width='40vw' v-model="errorDialog">
+                <v-card>
+                    <v-card-title class='justify-center'>
+                        <span>There was an error registering you! Please check your credentials and try again.</span>
+                    </v-card-title>
+                    <v-card-actions class="justify-center">
+                        <v-btn class="ma-2" @click="errorDialog=false">Login</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-card width="50vw" class="mx-auto my-10">
+                <v-card-title>Register</v-card-title>
+                <v-card-text>
+                    <v-form
+                        ref="form"
+                        v-model="valid"
+                        lazy-validation
                     >
-                        <v-radio
-                            label="Male"
-                            :value="true"
+                        <v-text-field
+                            v-model="username"
+                            :rules="nameRules"
+                            label="Username"
+                            required
+                        ></v-text-field>
+                        <v-text-field
+                            v-model="nickname"
+                            :rules="nicknameRules"
+                            placeholder="How do you want people to call you?"
+                            label="Nickname"
+                            required
+                        ></v-text-field>
+                        <v-text-field
+                        v-model="email"
+                        :rules="emailRules"
+                        label="E-mail"
+                        required
+                        ></v-text-field>
+                        <v-text-field
+                        v-model="password"
+                        :rules="passwordRules"
+                        type="password"
+                        label="Password"
+                        required
+                        ></v-text-field>
+                        <v-text-field
+                        v-model="password_confirmation"
+                        :rules="confirmPasswordRules"
+                        type="password"
+                        label="Confirm Password"
+                        required
+                        ></v-text-field>
+                        <!-- date of birth -->
+                        <v-menu
+                            ref="menu"
+                            v-model="menu"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="auto"
+                            >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                v-model="dob"
+                                label="Birthday date"
+                                prepend-icon="mdi-calendar"
+                                readonly
+                                v-bind="attrs"
+                                v-on="on"
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                v-model="dob"
+                                :active-picker.sync="activePicker"
+                                :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"
+                                min="1950-01-01"
+                                @change="save"
+                            ></v-date-picker>
+                            </v-menu>
+                        <v-radio-group 
+                            label="Gender: "
+                            v-model="gender"
+                            row
+                            :rules="[v => v !== undefined || 'Item is required']"
                         >
-                        </v-radio>
-                        <v-radio
-                            label="Female"
-                            :value="false"
-                        >
-                        </v-radio>
-                        <v-radio
-                            label="Other"
-                            :value="null"
-                        >
-                        </v-radio>
-                    </v-radio-group>
-                    <v-textarea v-model="description" outlined label="A few words about you"></v-textarea>
-                    <v-btn
-                        :disabled="!valid"
-                        color="success"
-                        class="mr-4"
-                        @click="validate"
-                        >
-                        Register
-                    </v-btn>
-                </v-form>
-            </v-card-text>
-        </v-card>
+                            <v-radio
+                                label="Male"
+                                :value="true"
+                            >
+                            </v-radio>
+                            <v-radio
+                                label="Female"
+                                :value="false"
+                            >
+                            </v-radio>
+                            <v-radio
+                                label="Other"
+                                :value="null"
+                            >
+                            </v-radio>
+                        </v-radio-group>
+                        <v-textarea v-model="description" outlined label="A few words about you"></v-textarea>
+                        <h4 class="text-left mb-2">Profile Picture</h4>
+                        <v-card flat width='400px'>
+                            <div class="text-left">
+                                <v-img v-if="picture" :src="$store.state.server+'/storage/images/'+picture" width="400" contain></v-img>
+                                <input accept="image/*" type="file" @change="handleFileUpload( $event )"/>
+                                <!-- <v-btn v-if="file" @click="submitFile()">Upload</v-btn> -->
+                            </div>
+                        </v-card>
+                        <v-btn
+                            :disabled="!valid"
+                            color="success"
+                            class="mr-4"
+                            @click="validate"
+                            >
+                            Register
+                        </v-btn>
+                    </v-form>
+                </v-card-text>
+            </v-card>
+        </div>
     </div>
 </template>
 
@@ -150,6 +166,8 @@ export default {
         dob: '',
         nickname: '',
         valid: true,
+        file: '',
+        picture: null,
         nameRules: [
             v => !!v || 'Username is required',
             v => !(/[ ]/.test(v)) || 'No spaces allowed',
@@ -189,6 +207,7 @@ export default {
                 email: this.email,
                 description: this.description,
                 dob: this.dob,
+                avatar: this.picture
                 
         }).then(response => {
             if (response.data === 'success') {
@@ -200,6 +219,28 @@ export default {
         })
         }
         
+      },
+      handleFileUpload( event ){
+        this.file = event.target.files[0];
+        this.picture = null
+        this.submitFile()
+      },
+      submitFile(){
+        let formData = new FormData();
+        formData.append('file', this.file);
+        axios.post( this.$store.state.server+'/api/upload',
+            formData,
+            {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+          }
+        ).then(response => {
+          this.picture = response.data
+        })
+        .catch(function(){
+          console.log('FAILURE!!');
+        });
       },
   },
 }

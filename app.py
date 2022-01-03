@@ -129,13 +129,11 @@ def likeCategory(category_name):
                 like = CategoryLike(user_id=user.id, category_id=category.id)
                 db.session.add(like)
                 db.session.commit()
-                print(f'Like {category.title}')
                 return user.favorites
             else:
                 like = db.session.query(CategoryLike).filter_by(category_id=category.id).first()
                 db.session.delete(like)
                 db.session.commit()
-                print(f'Unlike {category.title}')
                 return user.favorites
         else:
             return 'failed'
@@ -165,7 +163,11 @@ def register():
     if user:
         return 'failed'
     else:
-        newUser = User(username=data['username'].lower(), password_hash=data['password'], ip=request.remote_addr, email=data['email'], description=data['description'], dob=datetime.strptime(data['dob'], '%Y-%m-%d'),gender=data['gender'], nickname=data['nickname'])
+        if not data['avatar']:
+            avatar = 'avatar.png'
+        else:
+            avatar = data['avatar']
+        newUser = User(username=data['username'].lower(), password_hash=data['password'], ip=request.remote_addr, email=data['email'], description=data['description'], dob=datetime.strptime(data['dob'], '%Y-%m-%d'),gender=data['gender'], nickname=data['nickname'],avatar=avatar)
         db.session.add(newUser)
         db.session.commit()
         return 'success'
@@ -174,7 +176,6 @@ def register():
 def login():
     data = request.json
     user = db.session.query(User).filter_by(username=data['username'].lower()).first()
-    print(f"User: {user}, Data: {data}")
     if user and user!=None:
         if user.password_hash == data['password']:
             # user.connected = True
@@ -242,7 +243,6 @@ def setProfilePic():
 @app.route('/api/profile/setcolor', methods=['POST'])
 def setColor():
     data = request.json
-    print(f'Data: {data}')
     user = VerifyUser(data['auth_token'])
     if user:
         user.color = data['color']
