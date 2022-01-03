@@ -149,20 +149,20 @@
                 mdi-thumb-up
               </v-icon>
             </div>
-            <span class="mr-3" style="font-size: 10px">{{post.likes_count}}</span>
+            <span class="mr-10" style="font-size: 20px">{{post.likes_count}}</span>
             <div class="d-flex align-center">
               <v-icon :color='hasUserDisliked(post)'>
                 mdi-thumb-down
               </v-icon>
             </div>
-            <span class="mr-3" style="font-size: 10px">{{post.dislikes_count}}</span>
+            <span class="mr-10" style="font-size: 20px">{{post.dislikes_count}}</span>
             <!-- comment button -->
             <div class="d-flex align-center">
               <v-icon color='black'>
                 mdi-comment
               </v-icon>
             </div>
-            <span class="mr-3" style="font-size: 10px">{{post.comments_count}}</span>
+            <span class="mr-10" style="font-size: 20px">{{post.comments_count}}</span>
           </v-card-actions>
         </v-card>
       </div>
