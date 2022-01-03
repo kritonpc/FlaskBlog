@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row v-if="categories">
-      <v-col cols="6" sm="2" md="4" v-for="category,index in categories" :key="index" >
+      <v-col cols="12" sm="6" md="4" lg='3' v-for="category,index in categories" :key="index" >
           <v-card @click="goToCategory(category)" class="ma-5 text-center">
             <v-img
               height="250"

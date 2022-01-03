@@ -19,7 +19,7 @@
           <h3>{{currentPost.body}}</h3>
         </v-card-text>
         <v-card-text v-if="currentPost.media">
-          <v-img :src="$store.state.server+'/storage/images/'+currentPost.media" width="100%"></v-img>
+          <v-img :src="$store.state.server+'/storage/images/'+currentPost.media" contain height="35vh"></v-img>
         </v-card-text>
         <v-divider/>
         <v-card-actions>
