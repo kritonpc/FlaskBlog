@@ -101,7 +101,7 @@
       </v-card>
     </v-dialog>
     <div class="text-center">
-      <v-img v-if="category.image !== undefined" width="100%" max-height="180px" class="align-center" :src="$store.state.server+'/storage/images/'+category.image">
+      <v-img v-if="category.image !== undefined" width="100%" max-height="180px" class="align-center" :src="$store.state.server+'/storage/images/'+category.banner">
       <v-chip large class='mt-2' color='black'><h1 style='color: white'>
         <div>
           <span>{{category.title}}</span>

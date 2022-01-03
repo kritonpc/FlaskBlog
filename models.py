@@ -67,6 +67,7 @@ class Category(db.Model):
     title = db.Column(db.String(30))
     description = db.Column(db.String(256))
     image = db.Column(db.String(256))
+    banner = db.Column(db.String(256))
     likes = db.relationship('CategoryLike', backref='categoryLikes', lazy='dynamic')
 
     def __repr__(self):
@@ -78,7 +79,9 @@ class Category(db.Model):
             "id": self.id,
             "title": self.title,
             "description": self.description,
-            "image": self.image
+            "image": self.image,
+            "banner": self.banner,
+            "likes_count": self.likes.count()
         }
 
 
