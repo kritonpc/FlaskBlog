@@ -47,6 +47,9 @@ export default {
                     console.log('auth_token', response.data.auth_token);
                     this.$store.commit('setToken', response.data.auth_token)
                     this.$store.commit('setIsLoggedIn', true)
+                    this.$store.commit('setColor', response.data.user.color)
+                    this.$store.commit('setTextColor', this.getTextColor(response.data.user.color))
+                    this.$store.commit('setDarkMode', response.data.user.dark_mode)
                     document.cookie = 'auth_token='+JSON.stringify(response.data.auth_token)
                     this.$router.push('/')
                 }

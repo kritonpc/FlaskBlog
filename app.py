@@ -193,7 +193,7 @@ def validateToken():
     data = request.json
     user = VerifyUser(data['auth_token'])
     if user:
-        return jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar, 'color':user.color, 'nickname':user.nickname, 'liked_categories':serializer(user.liked_categories)})
+        return jsonify({'username':user.username, 'id':user.id, 'avatar':user.avatar, 'color':user.color, 'nickname':user.nickname, 'dark_mode':user.dark_mode, 'liked_categories':serializer(user.liked_categories)})
     else:
         return 'failed'
 
@@ -250,6 +250,18 @@ def setColor():
         return jsonify(user.serialize)
     else:
         return 'failed'
+
+@app.route('/api/profile/setdarkmode', methods=['POST'])
+def setDarkMode():
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        user.dark_mode = data['darkmode']
+        db.session.commit()
+        return jsonify(user.serialize)
+    else:
+        return 'failed'
+
 
 # upload file route
 @app.route('/api/upload', methods=['POST'])

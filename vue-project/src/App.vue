@@ -1,11 +1,11 @@
 <template>
-  <v-app>
+  <v-app :style="{background: $store.getters.backgroundColor}">
     <v-app-bar
       app
       :color="$store.getters.color"
       dark
     >
-    <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon :color="$store.getters.textColor" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
         <router-link to="/">
           <v-img
@@ -17,12 +17,15 @@
             width="40"
           />
         </router-link>
-        Saidit
+        <span :style="$store.getters.textStyle">Saidit</span>
       </div>
       <div class="ml-4" style="width: 250px">
         <v-select  v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
       </div>
       <v-spacer></v-spacer>
+      <v-btn @click="toggleDarkMode" fab small class="mx-2">
+        <v-icon>mdi-theme-light-dark</v-icon>
+      </v-btn>
       <v-menu
         ref="colorMenu"
         :close-on-content-click="false"
@@ -237,6 +240,9 @@ export default {
         if (response.data !== 'failed') { 
           this.$store.commit('setUser', response.data),
           this.$store.commit('setColor', response.data.color)
+          this.$store.commit('setTextColor', this.getTextColor(response.data.color))
+          this.$store.commit('setDarkMode', response.data.dark_mode)
+          // this.$vuetify.theme.dark = true
           this.selectedColor = response.data.color
           this.$store.commit('setLikedCategories', response.data.liked_categories)
           this.$store.commit('setToken', JSON.parse(document.cookie.split('auth_token=')[1]))
@@ -270,6 +276,25 @@ export default {
     goToCategory() {
       this.$router.push('/categories/'+this.currentCategory)
       this.$store.commit('setSelectedCategory', this.currentCategory)
+    },
+    getTextColor(hexcolor){
+      hexcolor = hexcolor.replace("#", "");
+      var r = parseInt(hexcolor.substr(0,2),16);
+      var g = parseInt(hexcolor.substr(2,2),16);
+      var b = parseInt(hexcolor.substr(4,2),16);
+      var yiq = ((r*299)+(g*587)+(b*114))/1000;
+      return (yiq >= 128) ? 'black' : 'white';
+    },
+    toggleDarkMode() {
+      this.$store.commit('setDarkMode',!this.$store.state.darkMode)
+      if(this.$store.getters.isLoggedIn){
+        axios.post(this.$store.state.server+'/api/profile/setdarkmode', {
+          auth_token: document.cookie.split('auth_token=')[1],
+          darkmode: this.$store.state.darkMode
+        }).then(response => {
+          console.log(response);
+        })
+      }
     },
   },
 };

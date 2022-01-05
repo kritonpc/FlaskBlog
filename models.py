@@ -24,6 +24,7 @@ class User(db.Model):
     ip = db.Column(db.String(15))
     auth_token = db.Column(db.String(32), index=True, unique=True)
     color = db.Column(db.String(32), default='#000000')
+    dark_mode = db.Column(db.Boolean, default=False)
     liked_categories = db.relationship('CategoryLike', backref='user' , lazy='joined')
 
     def __repr__(self):
@@ -44,6 +45,7 @@ class User(db.Model):
             "ip": self.ip,
             "auth_token": self.auth_token,
             "color": self.color,
+            "dark_mode": self.dark_mode,
             "liked_categories": serializer(self.liked_categories)
         }
 

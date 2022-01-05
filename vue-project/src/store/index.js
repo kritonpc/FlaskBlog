@@ -16,7 +16,10 @@ export default new Vuex.Store({
     token: null,
     isLoggedIn: false,
     color: 'primary',
+    textColor: 'black',
     likedCategories: [],
+    darkMode: false,
+    backgroundColor: '#fafafa',
   },
   mutations: {
     addPost(state, post){
@@ -51,6 +54,20 @@ export default new Vuex.Store({
     },
     setLikedCategories(state, categories){
       state.likedCategories = categories
+    },
+    setTextColor(state, color){
+      state.textColor = color
+    },
+    setDarkMode(state, darkMode){
+      state.darkMode = darkMode
+      if (darkMode) {
+        state.backgroundColor = '#212121'
+      } else {
+        state.backgroundColor = '#fafafa'
+      }
+    },
+    setBackgroundColor(state, color){
+      state.backgroundColor = color
     }
   },
   actions: {
@@ -86,6 +103,15 @@ export default new Vuex.Store({
     },
     setLikedCategories({commit}, categories){
       commit('setLikedCategories', categories)
+    },
+    setTextColor({commit}, color){
+      commit('setTextColor', color)
+    },
+    setDarkMode({commit}, darkMode){
+      commit('setDarkMode', darkMode)
+    },
+    setBackgroundColor({commit}, color){
+      commit('setBackgroundColor', color)
     }
   },
   getters: {
@@ -96,7 +122,11 @@ export default new Vuex.Store({
     token: state => state.token,
     isLoggedIn: state => state.isLoggedIn,
     color: state => state.color,
-    likedCategories: state => state.likedCategories
+    likedCategories: state => state.likedCategories,
+    textColor: state => state.textColor,
+    textStyle: state => 'color: '+state.textColor,
+    darkMode: state => state.darkMode,
+    backgroundColor: state => state.backgroundColor,
   },
   modules: {
   }
