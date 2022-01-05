@@ -198,7 +198,6 @@ export default {
     colorMenu: false,
     selectedColor: '',
     colors:[
-          '#f9ffff',
           '#9c9d97',
           '#474f52',
           '#1d1c21',
@@ -214,6 +213,7 @@ export default {
           '#f38caa',
           '#c64fbd',
           '#8932b7',
+          "#ff009e"
         ]
   }),
   computed: {
@@ -260,6 +260,7 @@ export default {
   methods: {
     setColor(color) {
         this.selectedColor = color
+        this.$store.commit('setTextColor', this.getTextColor(color))
         this.$store.commit('setColor', color)
         if (this.$store.getters.isLoggedIn) {
           axios.post(this.$store.state.server+'/api/profile/setcolor', {

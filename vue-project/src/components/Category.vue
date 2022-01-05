@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-dialog v-model="showPostDialog" :width="calculateWidth()">
-      <v-card class='mx-auto' :dark="$store.getters.darkMode" v-if="currentPost !== undefined" rounded='lg'>
+    <v-dialog v-model="showPostDialog" overlay-opacity="0.95" :width="calculateWidth()">
+      <v-card elevation='10' class='mx-auto' :dark="$store.getters.darkMode" v-if="currentPost !== undefined" rounded='lg'>
         <v-card-title class="d-flex flex-row">
           <v-avatar size="68">
             <v-img :src="$store.state.server+'/storage/images/'+currentPost.poster.avatar" />
@@ -49,16 +49,16 @@
           <v-list id="scroll" style="width:100%" :style="currentPost.media ? 'max-height: 20vh' : 'max-height: 50vh' " class="overflow-y-auto">
             <v-list-item v-for="comment,i in currentPost.comments" :key="i" class="my-2 align-start">
               <div class="d-flex flex-row align-center">
-                  <v-avatar size='36'>
+                  <v-avatar size='42'>
                     <v-img :src="$store.state.server+'/storage/images/'+comment.user.avatar" alt="avatar" />
                   </v-avatar>
                   <div class="d-flex flex-column mx-1">
-                    <span style="font-size:12px">{{comment.user.nickname}}</span>
-                    <span style="font-size:8px">{{moment(comment.timestamp).fromNow()}}</span>
+                    <span style="font-size:14px">{{comment.user.nickname}}</span>
+                    <span style="font-size:10px">{{moment(comment.timestamp).fromNow()}}</span>
                   </div>
               </div>
               <v-spacer/>
-              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-color: white; font-size: 12px' :color="$store.getters.color" max-width='60%'>
+              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-color: white; font-size: 14px' :color="$store.getters.color" max-width='60%'>
                 {{comment.body}}
               </v-card>
             </v-list-item>
@@ -275,9 +275,9 @@
       },
       calculateWidth(){
         if(document.body.clientWidth > 1000){
-          return '50vw'
+          return '40vw'
         }else{
-          return '100vw%'
+          return '100vw'
         }  
       },
       openPost(index){
