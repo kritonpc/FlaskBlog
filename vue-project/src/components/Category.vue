@@ -58,8 +58,8 @@
                   </div>
               </div>
               <v-spacer/>
-              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-color: white; font-size: 14px' :color="$store.getters.color" max-width='60%'>
-                {{comment.body}}
+              <v-card rounded='xl' class="mx-2 pa-2 justify-end" style='font-size: 14px' :color="$store.getters.color" max-width='60%'>
+                <span :style="$store.getters.textStyle">{{comment.body}}</span>
               </v-card>
             </v-list-item>
           </v-list>
@@ -121,7 +121,7 @@
       <h1 v-if="posts.length === 0">There is nothing to see here yet.</h1>
       <v-container>
       <div v-for="post,index in posts.slice().reverse()" :key="index">
-        <v-card rounded='xl' :color="$store.getters.color" class="mt-3 mx-auto text-left" width="100%" @click="openPost(posts.length-index-1)">
+        <v-card rounded='xl' :color="$store.getters.color" class="mt-3 mx-auto text-left" :dark="$store.getters.darkText" width="100%" @click="openPost(posts.length-index-1)">
           <v-card-title class="d-flex flex-row">
             <v-avatar size="68">
               <v-img :src="$store.state.server+'/storage/images/'+post.poster.avatar" />
@@ -158,7 +158,7 @@
             <span class="ml-1 mr-4" style="font-size: 14px">{{post.dislikes_count}}</span>
             <!-- comment button -->
             <div class="d-flex align-center">
-              <v-icon color='black'>
+              <v-icon>
                 mdi-comment
               </v-icon>
             </div>
@@ -238,14 +238,14 @@
         if (post.likes.filter(like => like.user_id === this.$store.getters.user.id).length > 0) {
           return 'blue'
         }else{
-          return 'black'
+          return ''
         }
       },
       hasUserDisliked(post){
         if (post.dislikes.filter(dislike => dislike.user_id === this.$store.getters.user.id).length > 0) {
           return 'blue'
         }else{
-          return 'black'
+          return ''
         }
       },
       addComment(post){

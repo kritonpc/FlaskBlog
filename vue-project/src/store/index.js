@@ -17,6 +17,7 @@ export default new Vuex.Store({
     isLoggedIn: false,
     color: 'primary',
     textColor: 'black',
+    darkText: false,
     likedCategories: [],
     darkMode: false,
     backgroundColor: '#fafafa',
@@ -68,6 +69,9 @@ export default new Vuex.Store({
     },
     setBackgroundColor(state, color){
       state.backgroundColor = color
+    },
+    setDarkText(state, darkText){
+      state.darkText = darkText
     }
   },
   actions: {
@@ -112,6 +116,9 @@ export default new Vuex.Store({
     },
     setBackgroundColor({commit}, color){
       commit('setBackgroundColor', color)
+    },
+    setDarkText({commit}, darkText){
+      commit('setDarkText', darkText)
     }
   },
   getters: {
@@ -127,6 +134,7 @@ export default new Vuex.Store({
     textStyle: state => 'color: '+state.textColor,
     darkMode: state => state.darkMode,
     backgroundColor: state => state.backgroundColor,
+    darkText: state => state.darkText,
   },
   modules: {
   }

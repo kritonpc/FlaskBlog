@@ -17,7 +17,7 @@
             width="40"
           />
         </router-link>
-        <span :style="$store.getters.textStyle">Saidit</span>
+        <span :style="$store.getters.textStyle"><strong>Saidit</strong></span>
       </div>
       <div class="ml-4" style="width: 250px">
         <v-select  v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
@@ -284,6 +284,7 @@ export default {
       var g = parseInt(hexcolor.substr(2,2),16);
       var b = parseInt(hexcolor.substr(4,2),16);
       var yiq = ((r*299)+(g*587)+(b*114))/1000;
+      this.$store.commit('setDarkText', (yiq < 128));
       return (yiq >= 128) ? 'black' : 'white';
     },
     toggleDarkMode() {
