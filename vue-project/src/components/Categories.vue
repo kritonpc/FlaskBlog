@@ -2,7 +2,7 @@
   <div>
     <v-row v-if="categories">
       <v-col cols="12" sm="6" md="4" lg='3' v-for="category,index in categories" :key="index" >
-          <v-card @click="goToCategory(category)" class="ma-5 text-center">
+          <v-card elevation='6' @click="goToCategory(category)" :dark="$store.getters.darkMode" class="ma-5 text-center">
             <v-img
               height="250"
               :src="$store.state.server+'/storage/images/'+category.image"
