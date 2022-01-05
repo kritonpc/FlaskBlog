@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-dialog v-model="showPostDialog" :width="calculateWidth()">
-      <v-card class='mx-auto' light v-if="currentPost !== undefined" rounded='lg'>
+      <v-card class='mx-auto' :dark="$store.getters.darkMode" v-if="currentPost !== undefined" rounded='lg'>
         <v-card-title class="d-flex flex-row">
           <v-avatar size="68">
             <v-img :src="$store.state.server+'/storage/images/'+currentPost.poster.avatar" />
