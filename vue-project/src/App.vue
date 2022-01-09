@@ -180,7 +180,7 @@
     </v-navigation-drawer>
       <router-view/>
     </v-main>
-    <v-footer app bottom fixed padless>Made by PP</v-footer>
+    <v-footer app bottom fixed padless>Made by Peter Pavlidis</v-footer>
   </v-app>
 </template>
 
