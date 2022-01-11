@@ -12,12 +12,12 @@
             alt="Vuetify Logo"
             class="shrink mr-2"
             contain
-            :src="$store.state.server +'/storage/images/logo-alb.png'"
+            :src="$store.state.server +'/storage/images/logo.png'"
             transition="scale-transition"
             width="40"
           />
         </router-link>
-        <span :style="$store.getters.textStyle"><strong>Saidit</strong></span>
+        <span :style="$store.getters.textStyle"><strong>REPOF</strong></span>
       </div>
       <div class="ml-4" style="width: 250px">
         <v-select  v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
