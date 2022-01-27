@@ -29,6 +29,9 @@ def serializer(object):
 
 def VerifyUser(token):
     if token != 'undefined':
+        # check if token contains a ;
+        if '};' in token:
+            token = token.split('};')[0] + '}'
         token = json.loads(token)
         user = db.session.query(User).filter_by(id=token['id']).first()
         if user.auth_token == token['auth_token']:

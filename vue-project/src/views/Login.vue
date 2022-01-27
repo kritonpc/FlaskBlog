@@ -37,6 +37,15 @@ export default {
         }
     },
     methods: {
+        getTextColor(hexcolor){
+            hexcolor = hexcolor.replace("#", "");
+            var r = parseInt(hexcolor.substr(0,2),16);
+            var g = parseInt(hexcolor.substr(2,2),16);
+            var b = parseInt(hexcolor.substr(4,2),16);
+            var yiq = ((r*299)+(g*587)+(b*114))/1000;
+            this.$store.commit('setDarkText', (yiq < 128));
+            return (yiq >= 128) ? 'black' : 'white';
+        },
         login() {
             axios.post(this.$store.state.server+'/api/login', {
                 username: this.username,
@@ -57,6 +66,7 @@ export default {
                     this.errorDialog = true
                 }
             }).catch(error => {
+                console.log(error);
                 this.error = error.response.data.message
                 this.errorDialog = true
             }).finally(() => {
