@@ -26,6 +26,11 @@ def serializer(object):
         ser.append(item.serialize)
     return ser
 
+def serializeUsers(object):
+    ser = []
+    for item in object:
+        ser.append(item.info)
+    return ser
 
 def VerifyUser(token):
     if token != 'undefined':
@@ -267,6 +272,28 @@ def setDarkMode():
     else:
         return 'failed'
 
+@app.route('/api/admin/users', methods=['GET'])
+def getUsers():
+    users = db.session.query(User).all()
+    return jsonify(serializeUsers(users))
+
+@app.route('/api/admin/posts', methods=['GET'])
+def getAllPosts():
+    posts = db.session.query(Post).all()
+    obj = serializer(posts)
+    return jsonify(obj)
+
+@app.route('/api/admin/new/category', methods=['POST'])
+def newCategory():
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        newCategory = Category(title=data['title'], description=data['description'], image=data['image'], banner=data['banner'])
+        db.session.add(newCategory)
+        db.session.commit()
+        return 'success'
+    else:
+        return 'failed'
 
 # upload file route
 @app.route('/api/upload', methods=['POST'])

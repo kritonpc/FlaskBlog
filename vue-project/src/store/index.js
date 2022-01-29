@@ -135,6 +135,7 @@ export default new Vuex.Store({
     darkMode: state => state.darkMode,
     backgroundColor: state => state.backgroundColor,
     darkText: state => state.darkText,
+    isAdmin: state => state.user.id === "07196a56-08b9-4952-9986-694f9b90a10e" && state.user.username === "admin"
   },
   modules: {
   }

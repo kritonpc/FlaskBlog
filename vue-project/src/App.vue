@@ -112,9 +112,9 @@
               <router-link to="/profile">{{$store.getters.user.nickname}}</router-link>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item>
+          <v-list-item v-if="$store.getters.isAdmin">
             <v-list-item-title>
-              <router-link to="/settings">Settings</router-link>
+              <router-link to="/admin">Admin Panel</router-link>
             </v-list-item-title>
           </v-list-item>
           <v-list-item>

@@ -45,7 +45,13 @@ const routes = [
     name: 'Register',
     component: () => import('../views/Register.vue'),
     meta: { title: 'Saidit' }
-  }
+  },
+  {
+    path: '/admin',
+    name: 'Admin Panel',
+    component: () => import('../views/Admin.vue'),
+    meta: { title: 'Saidit' }
+  },
 ]
 
 const router = new VueRouter({
