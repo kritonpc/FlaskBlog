@@ -1,8 +1,17 @@
 <template>
     <div class="justify-center text-center">
         <v-dialog width="40vw" overlay-opacity='0.8' v-model='errorDialog'>
-            <v-card class="pa-8">
-                <h2 class="text-center">There was an error logging in, please try again.</h2>
+            <v-card >
+                <v-toolbar height="50px" :color="$store.getters.color" flat dark>
+                    <v-toolbar-title>Error</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn icon @click.native="errorDialog = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-toolbar>
+                <v-card-text class="pa-8">
+                    <h2 class="text-center">{{errorMessage}}</h2>
+                </v-card-text>
             </v-card>
         </v-dialog>
         <v-card class="ma-10 mx-auto pa-5" width="40vw">
@@ -31,6 +40,7 @@ export default {
     name: 'Login',
     data() {
         return {
+            errorMessage: '',
             username: '',
             password: '',
             errorDialog: false,
@@ -51,7 +61,8 @@ export default {
                 username: this.username,
                 password: crypto.createHash('sha256').update(this.password).digest('hex'),
             }).then(response => {
-                if(response.data){
+                if(response.data.success === true){
+                    console.log('success');
                     this.$store.commit('setUser', response.data.user)
                     console.log('auth_token', response.data.auth_token);
                     this.$store.commit('setToken', response.data.auth_token)
@@ -64,10 +75,16 @@ export default {
                 }
                 else{
                     this.errorDialog = true
+                    this.errorMessage = response.data.message
                 }
             }).catch(error => {
-                console.log(error);
-                this.error = error.response.data.message
+                // console.log(error);
+                console.log('resp: ',error.response);
+                if (error.response.data.message){
+                    this.errorMessage = error.response.data.message
+                }else{
+                    this.errorMessage = 'There was an error please try again later.'
+                }
                 this.errorDialog = true
             }).finally(() => {
                 this.loading = false

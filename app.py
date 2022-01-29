@@ -185,10 +185,12 @@ def login():
             user.auth_token = uuid.uuid4().hex
             user.ip = request.remote_addr
             db.session.commit()
-            response = jsonify({'auth_token':{'username':user.username, 'id':user.id, 'avatar':user.avatar, 'auth_token':user.auth_token,}, 'user': user.serialize})
+            response = jsonify({'auth_token':{'username':user.username, 'id':user.id, 'avatar':user.avatar, 'auth_token':user.auth_token,}, 'user': user.serialize, 'success':True})
             return response
         else:
-            return 'failed'
+            return jsonify({'success':'false','message':'The password you entered is incorrect.'})
+    else:
+        return {'success':False,'message':'The username you entered is incorrect.'}
     
 
 @app.route('/api/validate-token', methods=['POST'])
