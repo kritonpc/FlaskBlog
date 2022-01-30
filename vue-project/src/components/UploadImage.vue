@@ -10,7 +10,7 @@
 <script>
 import axios from "axios";
   export default {
-    name: 'Upload Image',
+    name: 'UploadImage',
     data() {
         return {
             file: '',

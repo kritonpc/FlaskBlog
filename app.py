@@ -295,6 +295,40 @@ def newCategory():
     else:
         return 'failed'
 
+@app.route('/api/admin/remove/category', methods=['POST'])
+def removeCategory():
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        category = db.session.query(Category).filter_by(id=data['category_id']).first()
+        if category:
+            db.session.delete(category)
+            # Delete all posts in category
+            posts = db.session.query(Post).filter_by(category_id=data['category_id']).all()
+            for post in posts:
+                db.session.delete(post)
+            db.session.commit()
+            return 'success'
+        else:
+            return 'failed'
+    else:
+        return 'failed'
+
+@app.route('/api/admin/remove/post', methods=['POST'])
+def removePost():
+    data = request.json
+    user = VerifyUser(data['auth_token'])
+    if user:
+        post = db.session.query(Post).filter_by(id=data['post_id']).first()
+        if post:
+            db.session.delete(post)
+            db.session.commit()
+            return 'success'
+        else:
+            return 'failed'
+    else:
+        return 'failed'
+
 # upload file route
 @app.route('/api/upload', methods=['POST'])
 def upload():

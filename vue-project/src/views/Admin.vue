@@ -1,37 +1,120 @@
 <template>
   <div v-if="$store.getters.isAdmin">
     <v-dialog v-model="addCategoryDialog" width="40vw">
-        <v-card class="pa-4">
-            <v-text-field
-                v-model="newCategoryTitle"
-                label="Title"
-                required
-            ></v-text-field>
-            <v-textarea
-                v-model="newCategoryDescription"
-                label="Description"
-                required
-            ></v-textarea>
-            <span>Category Image</span>
-            <UploadImage @uploaded='changePic'/>
-            <div class="d-flex">
-                <v-spacer/>
-                <v-btn type="submit" @click="addCategory">Add</v-btn>
-            </div>
-        </v-card>
+      <v-card class="pa-4">
+        <v-text-field
+          v-model="newCategoryTitle"
+          label="Title"
+          required
+        ></v-text-field>
+        <v-textarea
+          v-model="newCategoryDescription"
+          label="Description"
+          required
+        ></v-textarea>
+        <span>Category Image</span>
+        <UploadImage @uploaded="changePic" />
+        <div class="d-flex">
+          <v-spacer />
+          <v-btn type="submit" @click="addCategory">Add</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="removeCategoryDialog" width="40vw">
+      <v-card>
+        <v-toolbar flat :color="$store.getters.color">
+          <v-toolbar-title>Remove Category by Id</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click.native="removeCategoryDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text class="pa-4">
+          <v-text-field
+            v-model="categoryId"
+            label="Category Id"
+            required
+          ></v-text-field>
+          <div class="d-flex">
+            <v-spacer />
+            <v-btn type="submit" @click="removeCategory">Remove</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="removePostDialog" width="40vw">
+      <v-card>
+        <v-toolbar flat :color="$store.getters.color">
+          <v-toolbar-title>Remove Post by Id</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click.native="removePostDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text class="pa-4">
+          <v-text-field
+            v-model="postId"
+            label="Post Id"
+            required
+          ></v-text-field>
+          <div class="d-flex">
+            <v-spacer />
+            <v-btn type="submit" @click="removePost">Remove</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
     </v-dialog>
     <div class="mt-3 d-flex px-10">
       <v-card rounded="xl" class="pa-4 text-center" width="300px">
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="addCategoryDialog = true" :color="$store.getters.color" fab v-bind="attrs" v-on="on">
+            <v-btn
+              @click="addCategoryDialog = true"
+              :color="$store.getters.color"
+              class="mx-2"
+              fab
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon>mdi-card-plus</v-icon>
             </v-btn>
           </template>
           <span>Add Category</span>
         </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              @click="removeCategoryDialog = true"
+              :color="$store.getters.color"
+              class="mx-2"
+              fab
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mdi-card-remove</v-icon>
+            </v-btn>
+          </template>
+          <span>Remove Category</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              @click="removePostDialog = true"
+              :color="$store.getters.color"
+              class="mx-2"
+              fab
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mdi-note-remove</v-icon>
+            </v-btn>
+          </template>
+          <span>Remove Post</span>
+        </v-tooltip>
       </v-card>
-      <v-spacer></v-spacer>
+      <v-spacer />
+      <h2 class="my-auto">Administrator Dashboard</h2>
+      <v-spacer />
       <v-card rounded="xl" class="pa-4 ma-0" width="300px">
         <v-slider
           v-model="cols"
@@ -92,11 +175,16 @@ export default {
   },
   data() {
     return {
+      removeCategoryDialog: false,
+      removePostDialog: false,
+      categoryId: "",
+      postId: "",
       addCategoryDialog: false,
-      newCategoryTitle:'',
-      newCategoryDescription:'',
+      newCategoryTitle: "",
+      newCategoryDescription: "",
       picUrl: "",
       users: [],
+      posts: [],
       cols: -2,
       ticksLabels: ["Small", "Medium", "Large"],
       categoryHeaders: [
@@ -123,35 +211,71 @@ export default {
     };
   },
   mounted() {
-    axios
-      .get(this.$store.state.server + "/api/admin/users")
-      .then((response) => {
-        this.users = response.data;
-      });
-    axios
-      .get(this.$store.state.server + "/api/admin/posts")
-      .then((response) => {
-        this.posts = response.data;
-      });
+      this.fetch()
   },
   methods: {
-      changePic(url) {
-          this.picUrl = url;
-      },
-      addCategory(){
-          axios.post(this.$store.state.server + "/api/admin/new/category", {
-              auth_token: document.cookie.split('auth_token=')[1],
-              title: this.newCategoryTitle,
-              description: this.newCategoryDescription,
-              image: this.picUrl,
-              banner: this.picUrl
-          }).then(() => {
-              this.addCategoryDialog = false;
-              this.newCategoryTitle = '';
-              this.newCategoryDescription = '';
-              this.picUrl = '';
-          });
-      }
+    fetch() {
+      axios
+        .get(this.$store.state.server + "/api/admin/users")
+        .then((response) => {
+          this.users = response.data;
+        });
+      axios
+        .get(this.$store.state.server + "/api/admin/posts")
+        .then((response) => {
+          this.posts = response.data;
+        });
+    },
+    changePic(url) {
+      this.picUrl = url;
+    },
+    addCategory() {
+      axios
+        .post(this.$store.state.server + "/api/admin/new/category", {
+          auth_token: document.cookie.split("auth_token=")[1],
+          title: this.newCategoryTitle,
+          description: this.newCategoryDescription,
+          image: this.picUrl,
+          banner: this.picUrl,
+        })
+        .then(() => {
+          this.addCategoryDialog = false;
+          this.newCategoryTitle = "";
+          this.newCategoryDescription = "";
+          this.picUrl = "";
+        })
+        .finally(() => {
+            this.fetch()
+        })
+    },
+    removeCategory() {
+      axios
+        .post(this.$store.state.server + "/api/admin/remove/category", {
+          auth_token: document.cookie.split("auth_token=")[1],
+          category_id: this.categoryId,
+        })
+        .then(() => {
+          this.removeCategoryDialog = false;
+          this.categoryId = "";
+        })
+        .finally(() => {
+            this.fetch()
+        })
+    },
+    removePost() {
+      axios
+        .post(this.$store.state.server + "/api/admin/remove/post", {
+          auth_token: document.cookie.split("auth_token=")[1],
+          post_id: this.postId,
+        })
+        .then(() => {
+          this.removePostDialog = false;
+          this.postId = "";
+        })
+        .finally(() => {
+            this.fetch()
+        })
+    },
   },
 };
 </script>
