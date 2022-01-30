@@ -319,13 +319,20 @@ def removePost():
     data = request.json
     user = VerifyUser(data['auth_token'])
     if user:
-        post = db.session.query(Post).filter_by(id=data['post_id']).first()
-        if post:
-            db.session.delete(post)
+        if data['post_id'] == '*':
+            posts = db.session.query(Post).all()
+            for post in posts:
+                db.session.delete(post)
             db.session.commit()
             return 'success'
         else:
-            return 'failed'
+            post = db.session.query(Post).filter_by(id=data['post_id']).first()
+            if post:
+                db.session.delete(post)
+                db.session.commit()
+                return 'success'
+            else:
+                return 'failed'
     else:
         return 'failed'
 
