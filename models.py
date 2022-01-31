@@ -73,6 +73,7 @@ class Category(db.Model):
     image = db.Column(db.String(256))
     banner = db.Column(db.String(256))
     likes = db.relationship('CategoryLike', backref='categoryLikes', lazy='dynamic')
+    posts = db.relationship('Post', back_populates="category", lazy='dynamic')
 
     def __repr__(self):
         return '<Category {}>'.format(self.title)
@@ -85,7 +86,8 @@ class Category(db.Model):
             "description": self.description,
             "image": self.image,
             "banner": self.banner,
-            "likes_count": self.likes.count()
+            "likes_count": self.likes.count(),
+            "posts_count": self.posts.count()
         }
 
 
@@ -102,7 +104,7 @@ class Post(db.Model):
     dislikes = db.relationship('Dislike', backref='post', lazy='dynamic')
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     poster = db.relationship('User', backref='posts')
-    category = db.relationship('Category', backref='posts')
+    category = db.relationship('Category', back_populates="posts")
 
     def __repr__(self):
         return '<Post {}>'.format(self.title)

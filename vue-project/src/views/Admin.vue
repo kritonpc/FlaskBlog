@@ -192,6 +192,7 @@ export default {
         { text: "Title", value: "title" },
         { text: "Description", value: "description" },
         { text: "Likes", value: "likes_count" },
+        { text: "Posts", value: "posts_count" },
       ],
       usersHeaders: [
         { text: "Id", value: "id" },
