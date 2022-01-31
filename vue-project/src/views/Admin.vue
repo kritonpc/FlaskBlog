@@ -201,6 +201,7 @@ export default {
       ],
       postsHeaders: [
         { text: "Id", value: "id" },
+        { text: "Category", value: "category" },
         { text: "Title", value: "title" },
         { text: "Body", value: "body" },
         { text: "Poster", value: "poster_id" },
