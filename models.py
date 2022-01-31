@@ -56,6 +56,8 @@ class User(db.Model):
             "username": self.username,
             "nickname": self.nickname,
             "avatar": self.avatar,
+            "gender": self.gender,
+            "description": self.description,
         }
 
     @property
@@ -100,6 +102,7 @@ class Post(db.Model):
     dislikes = db.relationship('Dislike', backref='post', lazy='dynamic')
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
     poster = db.relationship('User', backref='posts')
+    category = db.relationship('Category', backref='posts')
 
     def __repr__(self):
         return '<Post {}>'.format(self.title)
@@ -119,7 +122,8 @@ class Post(db.Model):
             "comments": serializer(self.comments),
             "poster": self.poster.info,
             "timestamp": self.timestamp,
-            "media": self.media
+            "media": self.media,
+            "category": self.category.title
         }
 
 class CategoryLike(db.Model):

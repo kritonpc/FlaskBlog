@@ -62,12 +62,12 @@ export default {
                 password: crypto.createHash('sha256').update(this.password).digest('hex'),
             }).then(response => {
                 if(response.data.success === true){
-                    console.log('success');
                     this.$store.commit('setUser', response.data.user)
                     console.log('auth_token', response.data.auth_token);
                     this.$store.commit('setToken', response.data.auth_token)
                     this.$store.commit('setIsLoggedIn', true)
                     this.$store.commit('setColor', response.data.user.color)
+                    this.$store.commit('setLikedCategories', response.data.user.liked_categories)
                     this.$store.commit('setTextColor', this.getTextColor(response.data.user.color))
                     this.$store.commit('setDarkMode', response.data.user.dark_mode)
                     document.cookie = 'auth_token='+JSON.stringify(response.data.auth_token)
