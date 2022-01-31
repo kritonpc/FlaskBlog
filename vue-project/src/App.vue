@@ -5,7 +5,7 @@
       :color="$store.getters.color"
       dark
     >
-    <v-app-bar-nav-icon :color="$store.getters.textColor" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon v-if="$store.getters.isLoggedIn" :color="$store.getters.textColor" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <div class="d-flex align-center">
         <router-link to="/">
           <v-img

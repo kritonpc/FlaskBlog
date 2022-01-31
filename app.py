@@ -17,21 +17,26 @@ migrate = Migrate(app, db, render_as_batch=True)
 app.config['SECRET_KEY'] = 'TsOpAnOxWrIaThS'
 
 from models import *
+# Allow cross origin
 cors = CORS(app, resources={r'/*': {'origins': '*'}})
 
-
+# Use the .serialize method for all the objects in a list of objects from the DB to create a list of json objects
 def serializer(object):
     ser = []
     for item in object:
         ser.append(item.serialize)
     return ser
 
+# Use the .info method for all the user objects in a list of user objects from the DB to create a list of json user objects
 def serializeUsers(object):
     ser = []
     for item in object:
         ser.append(item.info)
     return ser
 
+# Verify user by checking the token provided in the request and comparing it to the one in the DB. 
+# If the user is not authenticated or not found the function returns False
+# Otherwise it returns the User object from the DB
 def VerifyUser(token):
     if token != 'undefined':
         # check if token contains a ;
@@ -46,12 +51,13 @@ def VerifyUser(token):
     else:
         return False
 
-
+# GET request that returns all categories
 @app.route('/api/categories', methods=['GET'])
 def getCategories():
     categories = db.session.query(Category).all()
     return jsonify(serializer(categories))
 
+# GET request that returns all posts within a category
 @app.route('/api/<category>/posts', methods=['GET'])
 def getPosts(category):
     category = db.session.query(Category).filter_by(title=category).first()
@@ -59,11 +65,13 @@ def getPosts(category):
     obj = {'category':category.serialize, 'posts':serializer(posts)}
     return jsonify(obj)
 
+# GET request that returns the post object in json form for a specific post id
 @app.route('/api/posts/<post_id>', methods=['GET'])
 def getPost(post_id):
     post = db.session.query(Post).filter_by(id=post_id).first()
     return jsonify(post.serialize)
 
+# POST request that is responsible for creating a post based on the request information after verifying the user.
 @app.route('/api/posts/create', methods=['POST'])
 def createPost():
     data = request.json
@@ -76,6 +84,7 @@ def createPost():
     else:
         return 'failed'
 
+# POST request that is responsible for liking a post based on the request information after verifying the user.
 @app.route('/api/like/<post_id>', methods=['POST'])
 def likePost(post_id):
     data = request.json
@@ -100,7 +109,7 @@ def likePost(post_id):
     else:
         return 'failed'
 
-
+# POST request that is responsible for disliking a post based on the request information after verifying the user.
 @app.route('/api/dislike/<post_id>', methods=['POST'])
 def dislikePost(post_id):
     data = request.json
@@ -125,7 +134,7 @@ def dislikePost(post_id):
     else:
         return 'failed'
 
-
+# POST request that is responsible for liking a category based on the request information after verifying the user.
 @app.route('/api/categories/like/<category_name>', methods=['POST'])
 def likeCategory(category_name):
     data = request.json
@@ -148,6 +157,7 @@ def likeCategory(category_name):
     else:
         return 'failed'
 
+# POST request that is responsible for commenting on a post based on the request information after verifying the user.
 @app.route('/api/comment/<post_id>', methods=['POST'])
 def commentPost(post_id):
     data = request.json
@@ -164,6 +174,7 @@ def commentPost(post_id):
     else:
         return 'failed'
 
+# POST request that is responsible for registering a user based on the request information
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.json
@@ -180,6 +191,8 @@ def register():
         db.session.commit()
         return 'success'
 
+# POST request that is responsible for logging in a user based on the request information after verifying the user's credentials.
+# After the authentication the user is provided with their new authentication token.
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
@@ -197,7 +210,7 @@ def login():
     else:
         return {'success':False,'message':'The username you entered is incorrect.'}
     
-
+# POST request that is responsible for verifying a user based on the authentication token that the user provided
 @app.route('/api/validate-token', methods=['POST'])
 def validateToken():
     data = request.json
@@ -207,6 +220,7 @@ def validateToken():
     else:
         return 'failed'
 
+# Not currently implemented. Used to generate a link preview for the posts.
 @app.route('/api/link-preview', methods=['POST','GET'])
 def linkPreview():
     data = request.json
@@ -217,6 +231,7 @@ def linkPreview():
         print('Link Not Available')
         return {}
 
+# POST request that is responsible for returning the user information
 @app.route('/api/profile/', methods=['POST'])
 def getUserData():
     data = request.json
@@ -226,6 +241,7 @@ def getUserData():
     else:
         return 'failed'
 
+# GET request that is responsible for returning an image from the root of the database
 @app.route('/storage/images/<image_name>', methods=['GET'])
 def getImage(image_name):
     # open the file with the image name from images folder
@@ -233,12 +249,14 @@ def getImage(image_name):
     return send_file(image_file, mimetype='image')
 
 
+# GET request that is responsible for returning an image from a folder inside the root of the database
 @app.route('/storage/images/<image_folder>/<image_name>', methods=['GET'])
 def getImageInFolder(image_folder,image_name):
     # open the file with the image name from images folder
     image_file = open(f'images/{image_folder}/{image_name}', 'rb')
     return send_file(image_file, mimetype='image')
 
+# POST request that is responsible for changing the profile picture of a user.
 @app.route('/api/profile/setprofpic', methods=['POST'])
 def setProfilePic():
     data = request.json
@@ -250,6 +268,7 @@ def setProfilePic():
     else:
         return 'failed'
 
+# POST request that is responsible for changing the favourite theme color of a user.
 @app.route('/api/profile/setcolor', methods=['POST'])
 def setColor():
     data = request.json
@@ -261,6 +280,7 @@ def setColor():
     else:
         return 'failed'
 
+# POST request that is responsible for turning dark mode on or off for a user.
 @app.route('/api/profile/setdarkmode', methods=['POST'])
 def setDarkMode():
     data = request.json
@@ -272,17 +292,20 @@ def setDarkMode():
     else:
         return 'failed'
 
+# GET request that is responsible for returning all the users information from the DB
 @app.route('/api/admin/users', methods=['GET'])
 def getUsers():
     users = db.session.query(User).all()
     return jsonify(serializeUsers(users))
 
+# GET request that is responsible for returning all the posts from the DB
 @app.route('/api/admin/posts', methods=['GET'])
 def getAllPosts():
     posts = db.session.query(Post).all()
     obj = serializer(posts)
     return jsonify(obj)
 
+# POST request that is responsible for creating a new category based on the request data
 @app.route('/api/admin/new/category', methods=['POST'])
 def newCategory():
     data = request.json
@@ -295,6 +318,7 @@ def newCategory():
     else:
         return 'failed'
 
+# POST request that is responsible for removing a category based on the category id in the request data
 @app.route('/api/admin/remove/category', methods=['POST'])
 def removeCategory():
     data = request.json
@@ -314,6 +338,7 @@ def removeCategory():
     else:
         return 'failed'
 
+# POST request that is responsible for removing a category based on the category id in the request data
 @app.route('/api/admin/remove/post', methods=['POST'])
 def removePost():
     data = request.json
@@ -329,7 +354,7 @@ def removePost():
     else:
         return 'failed'
 
-# upload file route
+# POST request that is responsible for uploading a file(for noew only images are supported) and saving it in the local storage
 @app.route('/api/upload', methods=['POST'])
 def upload():
     if request.method == 'POST':
@@ -355,7 +380,7 @@ def upload():
         else:
             return 'failed'
 
+# Run the app, with the provided parameters (such as port)
 if __name__ == '__main__':
     app.debug = True
-    # socketio.run(app, host='0.0.0.0', port=2310)
     app.run(host='0.0.0.0', port=2310)
