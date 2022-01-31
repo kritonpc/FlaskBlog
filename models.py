@@ -56,6 +56,8 @@ class User(db.Model):
             "username": self.username,
             "nickname": self.nickname,
             "avatar": self.avatar,
+            "gender": self.gender,
+            "description": self.description,
         }
 
     @property

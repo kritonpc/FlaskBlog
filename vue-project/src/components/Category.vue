@@ -3,9 +3,23 @@
     <v-dialog v-model="showPostDialog" overlay-opacity="0.95" :width="calculateWidth()">
       <v-card elevation='10' class='mx-auto' :dark="$store.getters.darkMode" v-if="currentPost !== undefined" rounded='lg'>
         <v-card-title class="d-flex flex-row">
-          <v-avatar size="68">
-            <v-img :src="$store.state.server+'/storage/images/'+currentPost.poster.avatar" />
-          </v-avatar>
+          <!-- use v-hover to show a card with user info on hover over the avatar -->
+          <v-hover v-slot="{ hover }">
+            <v-card class="pa-0 ma-0 d-flex flex-row" flat>
+              <v-scroll-x-reverse-transition>
+                <v-card class="d-flex flex-column mr-3 px-2" color='grey lighten-4' v-if="hover">
+                  <v-card-text style="color: black" class="d-flex flex-column pa-1 my-auto">
+                    <h3>{{currentPost.poster.nickname}}</h3>
+                    <div class="subtitle-2">{{currentPost.poster.description}}</div>
+                    <div class="label">{{currentPost.poster.gender ? 'Male' : 'Female'}}</div>
+                  </v-card-text>
+                </v-card>
+              </v-scroll-x-reverse-transition>
+              <v-avatar size="68" class="my-auto">
+                <v-img :src="$store.state.server+'/storage/images/'+currentPost.poster.avatar" />
+              </v-avatar>
+            </v-card>
+          </v-hover>
           <div>
             <v-card-title>
               {{currentPost.title}}
@@ -359,12 +373,7 @@
     mounted () {
       // set selected category on store 
       this.$store.commit('setSelectedCategory', this.$attrs.category)
-      // this.$store.state.posts.forEach(post => {
-      //   if(post.category === this.$attrs.category){
-      //     this.posts.push(post)
-      //   }
-      // });     
-      this.getPosts()
+      // this.getPosts()
     },
   }
 </script>
@@ -384,5 +393,10 @@
   .container {
       max-width: 700px;
   }
+}
+.v-avatar{
+  outline: solid;
+  outline-width: 1px;
+  outline-color: #e0e0e0;
 }
 </style>
