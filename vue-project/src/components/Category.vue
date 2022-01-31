@@ -21,7 +21,7 @@
             </v-card>
           </v-hover>
           <div>
-            <v-card-title>
+            <v-card-title class="post-title">
               {{currentPost.title}}
             </v-card-title>
             <v-card-subtitle>
@@ -30,7 +30,7 @@
           </div>
         </v-card-title>
         <v-card-text>
-          <h3>{{currentPost.body}}</h3>
+          <div class="px-2 post-text">{{currentPost.body}}</div>
         </v-card-text>
         <v-card-text v-if="currentPost.media">
           <v-img :src="$store.state.server+'/storage/images/'+currentPost.media" contain height="35vh"></v-img>
@@ -141,7 +141,7 @@
               <v-img :src="$store.state.server+'/storage/images/'+post.poster.avatar" />
             </v-avatar>
             <div>
-              <v-card-title>
+              <v-card-title class="post-title-generic">
                 {{post.title}}
               </v-card-title>
               <v-card-subtitle>
@@ -150,7 +150,7 @@
             </div>
           </v-card-title>
           <v-card-text>
-            <h3>{{post.body}}</h3>
+            <div class="px-2 post-text">{{post.body}}</div>
           </v-card-text>
           <v-card-text v-if="post.media">
             <v-img :src="$store.state.server+'/storage/images/'+post.media" width="100%"></v-img>
@@ -398,5 +398,16 @@
   outline: solid;
   outline-width: 1px;
   outline-color: #e0e0e0;
+}
+.post-text{
+  text-align: justify;
+}
+.post-title{
+  max-width: 36ch;
+  word-break: break-word;
+}
+.post-title-generic{
+  max-width: 50ch;
+  word-break: break-word;
 }
 </style>
