@@ -23,58 +23,9 @@
         <v-select  v-model="currentCategory" @change="goToCategory" :items="categories" placeholder="Categories" item-text="title" hide-details></v-select>
       </div>
       <v-spacer></v-spacer>
-      <v-btn @click="toggleDarkMode" fab small class="mx-2">
+      <!-- <v-btn @click="toggleDarkMode" fab small class="mx-2">
         <v-icon>mdi-theme-light-dark</v-icon>
-      </v-btn>
-      <v-menu
-        ref="colorMenu"
-        :close-on-content-click="false"
-        v-model="colorMenu"
-        :nudge-right="40"
-        offset-y
-        transition="scale-transition"
-        origin="top right"
-        class="hidden-md-and-down"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn style="background-color: black" fab v-on="on" small>
-            <v-avatar
-            size="30"
-            :color="$store.getters.color"
-            style="font-size: 7px"
-            >Color</v-avatar>
-          </v-btn>
-        </template>
-        <v-card rounded='md'>
-          <v-row no-gutters style="width: 170px">
-            <template v-for="color,n in colors">
-              <v-col :key="n">
-                <v-card
-                  class="pa-1"
-                  outlined
-                  :color="selectedColor === color ? 'black' : 'white'"
-                  rounded='md'
-                  :disabled="selectedColor === color"
-                  @click="setColor(color)"
-                >
-                  <v-card
-                  width="30px"
-                  height="30px"
-                  rounded='md'
-                  class="mx-auto my-auto"
-                  :color="color"
-                  />
-                </v-card>
-              </v-col>
-              <v-responsive
-                v-if="(n+1) % 4 == 0 "
-                :key="`width-${n}`"
-                width="100%"
-              ></v-responsive>
-            </template>
-          </v-row>
-        </v-card>
-      </v-menu>
+      </v-btn> -->
       <v-menu
         ref="menu"
         :close-on-content-click="false"
@@ -94,20 +45,73 @@
             </v-avatar>
           </v-btn>
         </template>
-        <v-list v-if="!$store.getters.isLoggedIn">
+        <v-list>
           <v-list-item>
+              <v-list-item-title>
+                <v-menu
+                  ref="colorMenu"
+                  :close-on-content-click="false"
+                  v-model="colorMenu"
+                  :nudge-right="40"
+                  offset-y
+                  transition="scale-transition"
+                  origin="top right"
+                  class="hidden-md-and-down"
+                >
+                  <template v-slot:activator="{ on }">
+                    <div v-on="on">
+                      <v-btn :color="$store.getters.color" style="width: 20px; height:20px" fab elevation='0' x-small/>
+                      Color
+                    </div>
+                  </template>
+                  <v-card rounded='md'>
+                    <v-row no-gutters style="width: 170px">
+                      <template v-for="color,n in colors">
+                        <v-col :key="n">
+                          <v-card
+                            class="pa-1"
+                            outlined
+                            :color="selectedColor === color ? 'black' : 'white'"
+                            rounded='md'
+                            :disabled="selectedColor === color"
+                            @click="setColor(color)"
+                          >
+                            <v-card
+                            width="30px"
+                            height="30px"
+                            rounded='md'
+                            class="mx-auto my-auto"
+                            :color="color"
+                            />
+                          </v-card>
+                        </v-col>
+                        <v-responsive
+                          v-if="(n+1) % 4 == 0 "
+                          :key="`width-${n}`"
+                          width="100%"
+                        ></v-responsive>
+                      </template>
+                    </v-row>
+                  </v-card>
+                </v-menu>
+              </v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title>
+              <v-switch :input-value="$store.state.darkMode" class="my-auto py-1" @click="toggleDarkMode" label="Dark Mode" hide-details/>
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item v-if="!$store.getters.isLoggedIn">
             <v-list-item-title>
               <router-link to="/login">Login</router-link>
             </v-list-item-title>
           </v-list-item>
-          <v-list-item>
+          <v-list-item v-if="!$store.getters.isLoggedIn">
             <v-list-item-title>
               <router-link to="/register">Register</router-link>
             </v-list-item-title>
           </v-list-item>
-        </v-list>
-        <v-list v-else>
-          <v-list-item>
+          <v-list-item v-if="$store.getters.isLoggedIn">
             <v-list-item-title>
               <router-link to="/profile">{{$store.getters.user.nickname}}</router-link>
             </v-list-item-title>
@@ -118,7 +122,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item>
-            <v-list-item-title>
+            <v-list-item-title v-if="$store.getters.isLoggedIn">
               <router-link to="/logout">Logout</router-link>
             </v-list-item-title>
           </v-list-item>
@@ -303,12 +307,12 @@ export default {
 </script>
 
 <style>
-/* html {
-  overflow: hidden !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-} */
-
+.v-list-item__title{
+  padding: 0 20px !important
+}
+.v-list-item{
+  padding: 0 !important
+}
 html::-webkit-scrollbar {
   width: 0;
   height: 0;
